@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" width="207.767" height="183.345" viewBox="0 0 207.767 183.345">
+<path transform="matrix(1,0,0,-1,110.193,98.106)" stroke-width=".3985" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#000000" d="M-85.04042 0H81.45387"/>
+<path transform="matrix(1,0,0,-1,191.64688,98.106)" d="M3.58653 0C2.52383 .19925 .797 .797-.3985 1.49438V-1.49438C.797-.797 2.52383-.19925 3.58653 0"/>
+<text xml:space="preserve" transform="matrix(1 0 -0 1 0 183.345)" font-size="9.9626" font-family="CMMI10" font-style="italic"><tspan y="-83.094" x="198.752">x</tspan></text>
+<path transform="matrix(1,0,0,-1,110.193,98.106)" stroke-width=".3985" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#000000" d="M0-85.04042V81.45387"/>
+<path transform="matrix(0,-1,-1,-0,110.193,16.65213)" d="M3.58653 0C2.52383 .19925 .797 .797-.3985 1.49438V-1.49438C.797-.797 2.52383-.19925 3.58653 0"/>
+<text xml:space="preserve" transform="matrix(1 0 -0 1 0 183.345)" font-size="9.9626" font-family="CMMI10" font-style="italic"><tspan y="-175.735" x="107.572">y</tspan></text>
+<path transform="matrix(1,0,0,-1,110.193,98.106)" stroke-width=".79701" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#000000" d="M0 0H52.03113"/>
+<path transform="matrix(1,0,0,-1,162.22414,98.106)" d="M4.66248 0C3.28098 .25902 1.0361 1.0361-.51805 1.94269V-1.94269C1.0361-1.0361 3.28098-.25902 4.66248 0"/>
+<text xml:space="preserve" transform="matrix(1 0 -0 1 0 183.345)" font-size="9.9626" font-family="CMR10"><tspan y="-74.601" x="142.948 146.5445 152.0837 154.8533 158.72876 161.49837 166.47966 172.56682 178.10602 180.87563 186.41483">InitialSide</tspan></text>
+<path transform="matrix(1,0,0,-1,110.193,98.106)" stroke-width=".79701" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#000000" d="M0 0-39.72276 52.96376"/>
+<path transform="matrix(-.59999,-.79997,-.79997,.59999,70.470249,45.142244)" d="M4.66248 0C3.28098 .25902 1.0361 1.0361-.51805 1.94269V-1.94269C1.0361-1.0361 3.28098-.25902 4.66248 0"/>
+<text xml:space="preserve" transform="matrix(1 0 -0 1 -.0000009536743 183.345)" font-size="9.9626" font-family="CMR10"><tspan y="-138.472" x="3.321 9.687102 14.1104969 18.015835 26.314682 29.084286 34.623495 39.604795 45.691946 51.23115 54.000757 59.539964">TerminalSide</tspan></text>
+<path transform="matrix(1,0,0,-1,110.193,98.106)" stroke-width=".79701" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#000000" d="M28.3468 0C28.3468 15.6557 15.6557 28.3468 0 28.3468-6.1325 28.3468-12.10153 26.35582-17.00737 22.67665"/>
+<text xml:space="preserve" transform="matrix(1 0 -0 1 0 183.345)" font-size="9.9626" font-family="CMMI10" font-style="italic"><tspan y="-95.953" x="144.567">&#x03b8;</tspan></text>
+</svg>

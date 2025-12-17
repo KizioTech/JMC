@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" width="141.256" height="91.438" viewBox="0 0 141.256 91.438">
+<path transform="matrix(1,0,0,-1,35.372,77.591)" stroke-width=".79701" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#000000" d="M0 0H80.37794"/>
+<path transform="matrix(1,0,0,-1,115.74994,77.591)" d="M4.66248 0C3.28098 .25902 1.0361 1.0361-.51805 1.94269V-1.94269C1.0361-1.0361 3.28098-.25902 4.66248 0"/>
+<text xml:space="preserve" transform="matrix(1 0 -0 1 .0000076293949 91.438)" font-size="9.9626" font-family="CMR10"><tspan y="-3.321" x="106.422 113.89395 117.79929 129.41568">Arm1</tspan></text>
+<path transform="matrix(1,0,0,-1,35.372,77.591)" stroke-width=".79701" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#000000" d="M0 0 67.57014 67.57014"/>
+<path transform="matrix(.7071,-.7071,-.7071,-.7071,102.94213,10.020874)" d="M4.66248 0C3.28098 .25902 1.0361 1.0361-.51805 1.94269V-1.94269C1.0361-1.0361 3.28098-.25902 4.66248 0"/>
+<text xml:space="preserve" transform="matrix(1 0 -0 1 0 91.438)" font-size="9.9626" font-family="CMR10"><tspan y="-81.31" x="109.957 117.428958 121.3343 132.9507">Arm2</tspan></text>
+<path transform="matrix(1,0,0,-1,35.372,77.591)" stroke-width=".79701" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#000000" d="M19.84267 0C19.84267 5.26161 17.75137 10.3104 14.03088 14.03088"/>
+<text xml:space="preserve" transform="matrix(1 0 -0 1 0 91.438)" font-size="9.9626" font-family="CMMI10" font-style="italic"><tspan y="-18.892" x="66.911">&#x03b8;</tspan></text>
+<path transform="matrix(1,0,0,-1,35.372,77.591)" d="M1.99255 0C1.99255 1.10046 1.10046 1.99255 0 1.99255-1.10046 1.99255-1.99255 1.10046-1.99255 0-1.99255-1.10046-1.10046-1.99255 0-1.99255 1.10046-1.99255 1.99255-1.10046 1.99255 0ZM0 0"/>
+<text xml:space="preserve" transform="matrix(1 0 -0 1 .0000035762788 91.437999)" font-size="9.9626" font-family="CMR10"><tspan y="-3.52" x="3.32 9.9650549 14.388449 18.293789 22.16924 26.592637">Vertex</tspan></text>
+</svg>

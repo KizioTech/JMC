@@ -1,0 +1,331 @@
+@import "katex/dist/katex.min.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* JMC Math & Academics Design System */
+
+@layer base {
+  :root {
+    /* Core backgrounds */
+    --background: 210 100% 97%;
+    --foreground: 0 0% 0%;
+
+    /* Cards and surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+
+    /* Primary - Red accent */
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Golden */
+    --secondary: 45 93% 58%;
+    --secondary-foreground: 0 0% 0%;
+
+    /* Muted surfaces */
+    --muted: 210 40% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    /* Accent */
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 43% 11%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border and inputs */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 0 84% 60%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5% 26%;
+    --sidebar-primary: 240 6% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 5% 96%;
+    --sidebar-accent-foreground: 240 6% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217 91% 60%;
+
+    /* Custom JMC Colors */
+    --hero-dark: 220 43% 11%;
+    --hero-mid: 220 14% 28%;
+    --hero-light: 217 19% 35%;
+
+    /* Note boxes */
+    --definition-bg: 214 100% 97%;
+    --definition-border: 217 91% 60%;
+    --theorem-bg: 142 77% 97%;
+    --theorem-border: 142 71% 45%;
+    --example-bg: 48 96% 97%;
+    --example-border: 48 96% 53%;
+    --warning-bg: 0 86% 97%;
+    --warning-border: 0 84% 60%;
+  }
+
+  .dark {
+    --background: 220 43% 5%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 43% 8%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 43% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 84% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 45 93% 58%;
+    --secondary-foreground: 0 0% 0%;
+
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 18%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 0 84% 60%;
+
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 240 5% 96%;
+    --sidebar-primary: 224 76% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 240 5% 96%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 217 91% 60%;
+
+    --hero-dark: 220 43% 8%;
+    --hero-mid: 220 14% 18%;
+    --hero-light: 217 19% 25%;
+
+    --definition-bg: 217 33% 15%;
+    --definition-border: 217 91% 60%;
+    --theorem-bg: 142 20% 15%;
+    --theorem-border: 142 71% 45%;
+    --example-bg: 48 30% 15%;
+    --example-border: 48 96% 53%;
+    --warning-bg: 0 30% 15%;
+    --warning-border: 0 84% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* Serif font for academic content */
+  .font-serif {
+    font-family: "Times New Roman", Times, Georgia, serif;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mathFloat {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 200px 200px;
+  }
+}
+
+@keyframes titleGlow {
+  0% {
+    text-shadow: 0 0 20px rgba(255, 245, 221, 0.3);
+  }
+  100% {
+    text-shadow: 0 0 40px rgba(172, 168, 160, 0.6);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.5);
+  }
+}
+
+/* Utility classes for animations */
+.animate-float {
+  animation: float 15s infinite linear;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.animate-math-float {
+  animation: mathFloat 20s infinite linear;
+}
+
+.animate-title-glow {
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+.animate-shimmer {
+  animation: shimmer 0.5s forwards;
+}
+
+.animate-count-up {
+  animation: countUp 2s ease-out;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #c6c6c6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #ffffff 0%, hsl(var(--secondary)) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero gradient background */
+.hero-gradient {
+  background: linear-gradient(135deg, hsl(var(--hero-dark)) 0%, hsl(var(--hero-mid)) 50%, hsl(var(--hero-light)) 100%);
+}
+
+/* Math symbols background */
+.math-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90" fill="white" opacity="0.05">∑∫π</text></svg>');
+  background-size: 200px 200px;
+  animation: mathFloat 20s infinite linear;
+}
+
+/* Button hover shimmer effect */
+.btn-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-shimmer:hover::before {
+  left: 100%;
+}
+
+/* Note boxes */
+.note-box {
+  @apply font-serif p-4 my-6 rounded-lg shadow-sm;
+}
+
+.definition-box {
+  @apply note-box;
+  background: hsl(var(--definition-bg));
+  border-left: 4px solid hsl(var(--definition-border));
+}
+
+.theorem-box {
+  @apply note-box;
+  background: hsl(var(--theorem-bg));
+  border-left: 4px solid hsl(var(--theorem-border));
+}
+
+.example-box {
+  @apply note-box;
+  background: hsl(var(--example-bg));
+  border-left: 4px solid hsl(var(--example-border));
+}
+
+.warning-box {
+  @apply note-box;
+  background: hsl(var(--warning-bg));
+  border-left: 4px solid hsl(var(--warning-border));
+}
+
+/* KaTeX styling */
+.katex-display {
+  @apply my-4 overflow-x-auto py-2;
+}
+
+.katex {
+  font-size: 1.1em !important;
+}
