@@ -490,9 +490,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               </strong>
             ),
             img: ({ src, alt }) => (
-              <img 
-                src={src} 
-                alt={alt || ''} 
+              <img
+                src={src}
+                alt={alt || ''}
+                loading="lazy"
                 className="block mx-auto max-w-full h-auto rounded-md sm:rounded-lg shadow-md"
               />
             ),

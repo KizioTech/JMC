@@ -1,9 +1,9 @@
+import React, { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Suspense, lazy } from "react";
 import Loading from "./components/ui/Loading";
 
 // Lazy load all page components
@@ -28,17 +28,32 @@ const TranscendentalFunctionsTutorial = lazy(() => import("./pages/notes/Transce
 const NotFound = lazy(() => import("./pages/NotFound"));
 const MarkdownLoader = lazy(() => import("./components/MarkdownLoader"));
 import TutorialLoader from "./components/TutorialLoader";
+const QuizPage = lazy(() => import("./components/QuizPage"));
+
+// Preload critical routes
+const preloadCriticalRoutes = () => {
+  // Preload search service for better UX
+  import("./services/searchService");
+  // Preload common components
+  import("./components/MarkdownRenderer");
+};
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Suspense fallback={<Loading />}>
-          <Routes>
+const App = () => {
+  // Preload critical resources
+  React.useEffect(() => {
+    preloadCriticalRoutes();
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Suspense fallback={<Loading />}>
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/library" element={<Library />} />
             <Route path="/tutorials" element={<Tutorials />} />
@@ -70,12 +85,16 @@ const App = () => (
             <Route path="/tutorials/algebra/quadratic-equations-tutorial" element={<TutorialLoader filePath="/content/tutorials/algebra/quadratic-equations-tutorial.md" title="Solving Quadratic Equations - Interactive Tutorial" />} />
             <Route path="/tutorials/trigonometry/arcs-and-sectors-tutorial" element={<TutorialLoader filePath="/content/tutorials/trigonometry/arcs-and-sectors-tutorial.md" title="Arcs and Sectors Tutorial" />} />
 
+            {/* Quiz Routes */}
+            <Route path="/quiz/:quizId" element={<QuizPage />} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

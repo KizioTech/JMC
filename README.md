@@ -9,6 +9,9 @@ JMC Academics is a comprehensive online mathematics education platform offering 
 - **Course Library**: Structured courses with HTML content
 - **Responsive Design**: Mobile-friendly interface built with React and Tailwind CSS
 - **Modern UI**: Professional look with Shadcn UI components and animations
+- **Color Customization**: Choose from multiple theme variants (default, blue, green, purple, pink) with light and dark modes
+- **Interactive Quizzes**: Test your knowledge with standalone quiz pages linked from tutorials, featuring immediate feedback and explanations
+- **Dynamic Search**: Search across all content including notes, tutorials, quizzes, and documents with intelligent ranking and content snippets
 
 ## Technologies Used
 

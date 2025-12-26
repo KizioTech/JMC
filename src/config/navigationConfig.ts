@@ -17,6 +17,7 @@ export interface TutorialNav {
   title: string;
   tutorialPath: string;
   notesPath?: string;
+  quizPath?: string;
   prevTutorial?: string;
   nextTutorial?: string;
 }
@@ -103,6 +104,7 @@ export const navigationConfig: NavigationConfig = {
       title: 'Transcendental Functions Tutorial',
       tutorialPath: '/tutorials/calculus/transcendental-functions-tutorial',
       notesPath: '/notes/transcendental-functions',
+      quizPath: '/quiz/transcendental-functions-tutorial1',
       nextTutorial: 'trigonometric-functions-tutorial'
     },
     {

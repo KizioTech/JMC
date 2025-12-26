@@ -50,11 +50,13 @@ This means that some element $b \in B$ is the image of two or more elements from
 >
 > **Explanation:**
 
-$$\begin{align*}
+$$
+\begin{aligned}
 \text{People} &= 13 \quad (\text{pigeons}) \\
 \text{Months} &= 12 \quad (\text{pigeonholes}) \\
 \text{Since } 13 > 12, &\text{ at least one month must be shared by at least 2 people.}
-\end{align*}$$
+\end{aligned}
+$$
 
 > Example: The Shoebox Argument
 >

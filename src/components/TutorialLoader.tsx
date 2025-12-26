@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TutorialRenderer from './TutorialRenderer';
 import Layout from './layout/Layout';
-import { ArrowLeft, ChevronLeft, Menu, X, BookOpen, FileText, Smartphone, RotateCw, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, Menu, X, BookOpen, FileText, Smartphone, RotateCw, ChevronRight, HelpCircle } from 'lucide-react';
 import { getTutorialNavigation, navigationConfig } from '../config/navigationConfig';
 
 const cn = (...classes: (string | boolean | undefined)[]) => {
@@ -59,6 +59,7 @@ interface NavGroup {
   label: string;
   children: NavItem[];
 }
+
 
 // Mobile Warning Modal Component
 const MobileWarningModal = ({ onClose, onDontShowAgain }: { onClose: () => void; onDontShowAgain: () => void }) => {
@@ -300,6 +301,8 @@ const TutorialLoader = ({ filePath, title }: TutorialLoaderProps) => {
   const nextTutorial = navData?.next;
   const currentTutorial = navData?.current;
   const notesPath = currentTutorial?.notesPath;
+  const quizPath = currentTutorial?.quizPath;
+  const quizAvailable = !!quizPath;
 
   useEffect(() => {
     // Check if on mobile and show warning
@@ -520,6 +523,17 @@ const TutorialLoader = ({ filePath, title }: TutorialLoaderProps) => {
                 </button>
               </div>
             )}
+            {quizAvailable && (
+              <div className="mb-4">
+                <button
+                  onClick={() => window.open(quizPath, '_blank')}
+                  className="w-full flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-medium transition-all transform hover:scale-105 shadow-md"
+                >
+                  <HelpCircle className="w-5 h-5" />
+                  Take Quiz
+                </button>
+              </div>
+            )}
 
             {/* Navigation Buttons */}
             <div className="border-t border-gray-200 dark:border-gray-800 pt-4">
@@ -658,6 +672,20 @@ const TutorialLoader = ({ filePath, title }: TutorialLoaderProps) => {
                       >
                         <FileText className="w-5 h-5" />
                         View Notes
+                      </button>
+                    </div>
+                  )}
+                  {quizAvailable && (
+                    <div className="mb-4">
+                      <button
+                        onClick={() => {
+                          window.open(quizPath, '_blank');
+                          setMobileSidebarOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-medium transition-all shadow-md"
+                      >
+                        <HelpCircle className="w-5 h-5" />
+                        Take Quiz
                       </button>
                     </div>
                   )}

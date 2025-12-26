@@ -1,10 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Search, ChevronDown, Crown, User, ExternalLink, FileText, BookOpen, File } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { searchContent, getTypeLabel, getTypeColor, type SearchResult } from "@/services/searchService";
+import { ThemeSelector } from "@/components/ThemeSelector";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,6 +19,7 @@ const Navbar = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -31,14 +38,17 @@ const Navbar = () => {
 
   // Handle search
   useEffect(() => {
-    if (searchQuery.trim()) {
-      const results = searchContent(searchQuery);
-      setSearchResults(results);
-      setShowSearchResults(true);
-    } else {
-      setSearchResults([]);
-      setShowSearchResults(false);
-    }
+    const performSearch = async () => {
+      if (searchQuery.trim()) {
+        const results = await searchContent(searchQuery);
+        setSearchResults(results);
+        setShowSearchResults(true);
+      } else {
+        setSearchResults([]);
+        setShowSearchResults(false);
+      }
+    };
+    performSearch();
   }, [searchQuery]);
 
   // Close search results when clicking outside
@@ -53,6 +63,19 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Keyboard shortcut for search (Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleSearchResultClick = (result: SearchResult) => {
     setSearchQuery("");
     setShowSearchResults(false);
@@ -65,7 +88,7 @@ const Navbar = () => {
   };
 
   const handleBrowserSearch = () => {
-    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery + " site:yourdomain.com")}`;
+    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
     window.open(searchUrl, '_blank');
     setSearchQuery("");
     setShowSearchResults(false);
@@ -147,55 +170,85 @@ const Navbar = () => {
           <div className="relative" ref={searchRef}>
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
+              ref={searchInputRef}
               type="text"
               placeholder="Search pages, notes, documents..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery && setShowSearchResults(true)}
-              className="pl-10 w-64 focus:w-80 transition-all"
+              className="pl-10 w-48 focus:w-64 transition-all"
             />
-            
+
             {/* Search Results Dropdown */}
             {showSearchResults && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-xl max-h-[500px] overflow-y-auto z-50">
-                {searchResults.length > 0 ? (
-                  <>
-                    <div className="p-2 space-y-1">
-                      {searchResults.map((result) => (
-                        <button
-                          key={result.id}
-                          onClick={() => handleSearchResultClick(result)}
-                          className="w-full text-left p-3 rounded-md hover:bg-muted transition-colors group"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="mt-0.5 text-primary">
-                              {getResultIcon(result.type)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h4 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">
-                                  {result.title}
-                                </h4>
-                                <span className={cn(
-                                  "text-xs px-2 py-0.5 rounded-full border shrink-0",
-                                  getTypeColor(result.type)
-                                )}>
-                                  {getTypeLabel(result.type)}
-                                </span>
+              <TooltipProvider>
+                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-xl max-h-[500px] overflow-y-auto z-50">
+                  {searchResults.length > 0 ? (
+                    <>
+                      <div className="p-2 space-y-1">
+                        {searchResults.map((result) => (
+                          <Tooltip key={result.id}>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => handleSearchResultClick(result)}
+                                className="w-full text-left p-3 rounded-md hover:bg-muted transition-colors group"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className="mt-0.5 text-primary">
+                                    {getResultIcon(result.type)}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <h4 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">
+                                        {result.title}
+                                      </h4>
+                                      <span className={cn(
+                                        "text-xs px-2 py-0.5 rounded-full border shrink-0",
+                                        getTypeColor(result.type)
+                                      )}>
+                                        {getTypeLabel(result.type)}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground line-clamp-2">
+                                      {result.contentSnippet || result.description}
+                                    </p>
+                                    {result.author && (
+                                      <p className="text-xs text-muted-foreground mt-1">
+                                        by {result.author}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="max-w-sm">
+                              <div>
+                                <h4 className="font-semibold mb-1">{result.title}</h4>
+                                <div className="text-sm text-muted-foreground mb-2 prose prose-sm max-w-none">
+                                  <ReactMarkdown
+                                    remarkPlugins={[remarkMath]}
+                                    rehypePlugins={[rehypeKatex]}
+                                    components={{
+                                      p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>
+                                    }}
+                                  >
+                                    {result.description}
+                                  </ReactMarkdown>
+                                </div>
+                                {result.tags && result.tags.length > 0 && (
+                                  <div className="flex flex-wrap gap-1">
+                                    {result.tags.map((tag) => (
+                                      <span key={tag} className="text-xs bg-muted px-2 py-0.5 rounded">
+                                        {tag}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
-                              <p className="text-xs text-muted-foreground line-clamp-2">
-                                {result.description}
-                              </p>
-                              {result.author && (
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  by {result.author}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        ))}
+                      </div>
                     <div className="border-t border-border p-2">
                       <button
                         onClick={handleBrowserSearch}
@@ -204,9 +257,9 @@ const Navbar = () => {
                         <ExternalLink className="w-4 h-4" />
                         Search in browser for more results
                       </button>
-                    </div>
-                  </>
-                ) : (
+                        </div>
+                      </>
+                    ) : (
                   <div className="p-8 text-center">
                     <Search className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
                     <p className="text-sm text-muted-foreground mb-4">
@@ -223,9 +276,11 @@ const Navbar = () => {
                     </Button>
                   </div>
                 )}
-              </div>
+                </div>
+              </TooltipProvider>
             )}
           </div>
+          <ThemeSelector />
           <Link to="/JMCPlus">
             <Button variant="default" className="gap-2">
               <Crown className="w-4 h-4 text-secondary" />
@@ -256,6 +311,7 @@ const Navbar = () => {
             <div className="relative mb-4" ref={searchRef}>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
+                ref={searchInputRef}
                 type="text"
                 placeholder="Search pages, notes, documents..."
                 value={searchQuery}
@@ -266,43 +322,72 @@ const Navbar = () => {
               
               {/* Mobile Search Results */}
               {showSearchResults && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-xl max-h-[400px] overflow-y-auto z-50">
-                  {searchResults.length > 0 ? (
-                    <>
-                      <div className="p-2 space-y-1">
-                        {searchResults.map((result) => (
-                          <button
-                            key={result.id}
-                            onClick={() => {
-                              handleSearchResultClick(result);
-                              setMobileMenuOpen(false);
-                            }}
-                            className="w-full text-left p-3 rounded-md hover:bg-muted transition-colors"
-                          >
-                            <div className="flex items-start gap-2">
-                              <div className="mt-0.5 text-primary">
-                                {getResultIcon(result.type)}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="text-sm font-medium truncate">
-                                    {result.title}
-                                  </h4>
-                                  <span className={cn(
-                                    "text-xs px-2 py-0.5 rounded-full border shrink-0",
-                                    getTypeColor(result.type)
-                                  )}>
-                                    {getTypeLabel(result.type)}
-                                  </span>
+                <TooltipProvider>
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-xl max-h-[400px] overflow-y-auto z-50">
+                    {searchResults.length > 0 ? (
+                      <>
+                        <div className="p-2 space-y-1">
+                          {searchResults.map((result) => (
+                            <Tooltip key={result.id}>
+                              <TooltipTrigger asChild>
+                                <button
+                                  onClick={() => {
+                                    handleSearchResultClick(result);
+                                    setMobileMenuOpen(false);
+                                  }}
+                                  className="w-full text-left p-3 rounded-md hover:bg-muted transition-colors"
+                                >
+                                  <div className="flex items-start gap-2">
+                                    <div className="mt-0.5 text-primary">
+                                      {getResultIcon(result.type)}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <h4 className="text-sm font-medium truncate">
+                                          {result.title}
+                                        </h4>
+                                        <span className={cn(
+                                          "text-xs px-2 py-0.5 rounded-full border shrink-0",
+                                          getTypeColor(result.type)
+                                        )}>
+                                          {getTypeLabel(result.type)}
+                                        </span>
+                                      </div>
+                                      <p className="text-xs text-muted-foreground line-clamp-1">
+                                        {result.contentSnippet || result.description}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent side="bottom" className="max-w-sm">
+                                <div>
+                                  <h4 className="font-semibold mb-1">{result.title}</h4>
+                                  <div className="text-sm text-muted-foreground mb-2 prose prose-sm max-w-none">
+                                    <ReactMarkdown
+                                      remarkPlugins={[remarkMath]}
+                                      rehypePlugins={[rehypeKatex]}
+                                      components={{
+                                        p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>
+                                      }}
+                                    >
+                                      {result.description}
+                                    </ReactMarkdown>
+                                  </div>
+                                  {result.tags && result.tags.length > 0 && (
+                                    <div className="flex flex-wrap gap-1">
+                                      {result.tags.map((tag) => (
+                                        <span key={tag} className="text-xs bg-muted px-2 py-0.5 rounded">
+                                          {tag}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
-                                <p className="text-xs text-muted-foreground line-clamp-1">
-                                  {result.description}
-                                </p>
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          ))}
+                        </div>
                       <div className="border-t border-border p-2">
                         <button
                           onClick={() => {
@@ -335,7 +420,8 @@ const Navbar = () => {
                       </Button>
                     </div>
                   )}
-                </div>
+                  </div>
+                </TooltipProvider>
               )}
             </div>
             <nav className="flex flex-col">
@@ -378,6 +464,7 @@ const Navbar = () => {
               )}
             </nav>
             <div className="flex flex-col gap-3 mt-4">
+              <ThemeSelector />
               <Link to="/JMCPlus" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="default" className="w-full gap-2">
                   <Crown className="w-4 h-4 text-secondary" />

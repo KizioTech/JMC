@@ -100,6 +100,7 @@ const Courses = () => {
                   <img
                     src={course.image}
                     alt={course.alt}
+                    loading="lazy"
                     className="w-full h-full object-cover transition-transform hover:scale-105"
                   />
                 </div>

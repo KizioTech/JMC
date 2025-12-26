@@ -1,0 +1,36 @@
+{
+  "title": "Transcendental Functions Tutorial Quiz",
+  "description": "Test your understanding of transcendental functions",
+  "questions": [
+    {
+      "question": "What is the derivative of $e^x$?",
+      "options": ["$e^x$", "$\\ln(x)$", "$\\frac{1}{x}$", "$x^e$"],
+      "correct": 0,
+      "explanation": "The derivative of $e^x$ is $e^x$ itself. This is a fundamental property of the exponential function."
+    },
+    {
+      "question": "What is the integral of $\\frac{1}{x} \\, dx$?",
+      "options": ["$x$", "$\\ln|x| + C$", "$e^x + C$", "$\\frac{1}{x^2} + C$"],
+      "correct": 1,
+      "explanation": "The integral of $\\frac{1}{x}$ is the natural logarithm, $\\ln|x| + C$."
+    },
+    {
+      "question": "Which of these is a transcendental function?",
+      "options": ["$x^2$", "$\\sin(x)$", "$\\sqrt{x}$", "$x^3$"],
+      "correct": 1,
+      "explanation": "$\\sin(x)$ is a transcendental function because it cannot be expressed as a finite sequence of algebraic operations."
+    },
+    {
+      "question": "What is $\\lim_{x \\to 0} \\left( \\frac{\\sin(x)}{x} \\right)$?",
+      "options": ["$0$", "$1$", "$\\infty$", "undefined"],
+      "correct": 1,
+      "explanation": "The limit of $\\frac{\\sin(x)}{x}$ as $x$ approaches $0$ is $1$, which is fundamental in calculus."
+    },
+    {
+      "question": "What is the range of the function $f(x) = \\ln(x)$?",
+      "options": ["$(-\\infty, \\infty)$", "(-\\infty, 0)", "(0, \\infty)", "[0, \\infty)"],
+      "correct": 0,
+      "explanation": "The natural logarithm function has a range of all real numbers, $(-\\infty, \\infty)$."
+    }
+  ]
+}

@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, BookOpen, FileText, Calculator, Download, Eye, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, BookOpen, FileText, Calculator, Download, Eye, ChevronDown, ChevronUp, SortAsc, SortDesc } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getAllDocuments } from "@/services/documentService";
 
 interface Document {
@@ -30,29 +31,57 @@ const Library = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [sortBy, setSortBy] = useState<"title" | "author" | "type">("title");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [documents, setDocuments] = useState<Record<string, any[]>>({
     lectures: [],
     textbooks: [],
     exams: [],
     practice: []
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadDocuments = async () => {
+      setLoading(true);
       const data = await getAllDocuments();
       setDocuments(data);
+      setLoading(false);
     };
     loadDocuments();
   }, []);
 
   const filteredDocuments = Object.entries(documents).reduce((acc, [category, docs]) => {
     if (activeCategory === "all" || activeCategory === category) {
-      const filtered = docs.filter(doc =>
+      let filtered = docs.filter(doc =>
         doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         doc.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
         doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         doc.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
       );
+
+      // Sort the filtered results
+      filtered = filtered.sort((a, b) => {
+        let aValue: string, bValue: string;
+
+        switch (sortBy) {
+          case "author":
+            aValue = a.author || "";
+            bValue = b.author || "";
+            break;
+          case "type":
+            aValue = a.type || "";
+            bValue = b.type || "";
+            break;
+          default: // title
+            aValue = a.title || "";
+            bValue = b.title || "";
+        }
+
+        const comparison = aValue.localeCompare(bValue);
+        return sortOrder === "asc" ? comparison : -comparison;
+      });
+
       if (filtered.length > 0) {
         acc[category] = filtered;
       }
@@ -98,6 +127,30 @@ const Library = () => {
       default: return category;
     }
   };
+
+  const renderSkeletonCard = () => (
+    <Card className="overflow-hidden">
+      <div className="aspect-[16/9] bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5 flex items-center justify-center p-4">
+        <Skeleton className="w-12 h-12 rounded-full" />
+      </div>
+      <CardHeader className="pb-3">
+        <Skeleton className="h-4 w-3/4 mb-2" />
+        <Skeleton className="h-3 w-1/2" />
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-2/3" />
+        <div className="flex gap-1.5">
+          <Skeleton className="h-5 w-12 rounded-full" />
+          <Skeleton className="h-5 w-16 rounded-full" />
+        </div>
+        <div className="flex gap-2 pt-2">
+          <Skeleton className="h-8 flex-1" />
+          <Skeleton className="h-8 flex-1" />
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   const renderDocumentCard = (doc: Document, category: string) => (
     <Card key={doc.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-border/50 hover:border-primary/20">
@@ -182,16 +235,38 @@ const Library = () => {
             Your gateway to a vast collection of mathematical resources. Explore lecture notes, textbooks, past exams, and practice materials.
           </p>
 
-          {/* Search */}
-          <div className="max-w-md mx-auto relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              type="text"
-              placeholder="Search for textbooks, notes, exams..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background/90 backdrop-blur-sm"
-            />
+          {/* Search and Sort */}
+          <div className="max-w-2xl mx-auto space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Search for textbooks, notes, exams..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-background/90 backdrop-blur-sm"
+              />
+            </div>
+
+            {/* Sort Controls */}
+            <div className="flex items-center justify-center gap-4">
+              <span className="text-sm text-muted-foreground">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as "title" | "author" | "type")}
+                className="px-3 py-1 text-sm border border-border rounded-md bg-background"
+              >
+                <option value="title">Title</option>
+                <option value="author">Author</option>
+                <option value="type">Type</option>
+              </select>
+              <button
+                onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                className="p-1 hover:bg-muted rounded-md transition-colors"
+              >
+                {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -218,7 +293,13 @@ const Library = () => {
                   </div>
 
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {docs.map((doc) => renderDocumentCard(doc, category))}
+                    {loading ? (
+                      Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i}>{renderSkeletonCard()}</div>
+                      ))
+                    ) : (
+                      docs.map((doc) => renderDocumentCard(doc, category))
+                    )}
                   </div>
                 </div>
               </TabsContent>
@@ -239,7 +320,13 @@ const Library = () => {
                     return (
                       <>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {docsToShow.map((doc) => renderDocumentCard(doc, category))}
+                          {loading ? (
+                            Array.from({ length: 6 }).map((_, i) => (
+                              <div key={i}>{renderSkeletonCard()}</div>
+                            ))
+                          ) : (
+                            docsToShow.map((doc) => renderDocumentCard(doc, category))
+                          )}
                         </div>
                         {docs.length > 6 && (
                           <div className="flex justify-center mt-6">
