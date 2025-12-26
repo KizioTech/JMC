@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, BookOpen } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 const Courses = () => {
   const courses = [
@@ -77,6 +78,12 @@ const Courses = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>Free Mathematics Courses - JMC Academics | Learn Math Online</title>
+        <meta name="description" content="Explore free comprehensive mathematics courses covering calculus, algebra, geometry, statistics, and more. Expert-crafted learning materials for all levels." />
+        <meta name="keywords" content="free mathematics courses, online math courses, calculus courses, algebra courses, geometry courses, statistics courses, JMC Academics" />
+        <link rel="canonical" href="https://jmcacademics.netlify.app/courses" />
+      </Helmet>
       {/* Hero Section */}
       <section className="hero-gradient text-primary-foreground py-16 relative overflow-hidden">
         <div className="math-bg absolute inset-0" />
