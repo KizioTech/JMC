@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MarkdownRenderer from './MarkdownRenderer';
 import Layout from './layout/Layout';
-import { ArrowLeft, ChevronLeft, Menu, X, BookOpen, FileText, GraduationCap, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, Menu, X, BookOpen, FileText, GraduationCap, ChevronRight, Smartphone, RotateCw } from 'lucide-react';
 import { getChapterNavigation, navigationConfig } from '../config/navigationConfig';
 
 const cn = (...classes: (string | boolean | undefined)[]) => {
@@ -59,6 +59,59 @@ interface NavGroup {
   label: string;
   children: NavItem[];
 }
+
+// Mobile Warning Modal Component
+const MobileWarningModal = ({ onClose, onDontShowAgain }: { onClose: () => void; onDontShowAgain: () => void }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center">
+            <Smartphone className="w-6 h-6 text-orange-500" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Mobile Device Detected</h3>
+        </div>
+
+        <div className="space-y-3 mb-6 text-gray-700 dark:text-gray-300">
+          <p className="flex items-start gap-2">
+            <RotateCw className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+            <span>For the best experience viewing mathematical equations, please rotate your device to <strong>landscape mode</strong>.</span>
+          </p>
+          <p className="text-sm">
+            Some complex equations may be difficult to read in portrait orientation due to screen width limitations.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={onClose}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors"
+          >
+            Got It
+          </button>
+          <button
+            onClick={onDontShowAgain}
+            className="w-full text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium py-2 transition-colors text-sm"
+          >
+            Don't Show Again
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 const MathLoading = () => {
   const [progress, setProgress] = useState(0);
@@ -238,6 +291,7 @@ const MarkdownLoader = ({ filePath, title }: MarkdownLoaderProps) => {
   const [navigation, setNavigation] = useState<NavGroup[]>([]);
   const [activeSection, setActiveSection] = useState<string>('');
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [showMobileWarning, setShowMobileWarning] = useState(false);
 
   // Get navigation data from config using current route
   const currentRoute = window.location.pathname;
@@ -247,6 +301,21 @@ const MarkdownLoader = ({ filePath, title }: MarkdownLoaderProps) => {
   const currentChapter = navData?.current;
   const tutorialPath = currentChapter?.tutorialPath;
   const allChapters = navData?.allChapters || [];
+
+  useEffect(() => {
+    // Check if on mobile and show warning
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const hasSeenWarning = localStorage.getItem('hideOrientationWarning') === 'true';
+
+    if (isMobile && !hasSeenWarning) {
+      setShowMobileWarning(true);
+    }
+  }, []);
+
+  const handleDontShowAgain = () => {
+    localStorage.setItem('hideOrientationWarning', 'true');
+    setShowMobileWarning(false);
+  };
 
   useEffect(() => {
     const loadContent = async () => {
@@ -356,6 +425,15 @@ const MarkdownLoader = ({ filePath, title }: MarkdownLoaderProps) => {
 
   return (
     <Layout>
+      <AnimatePresence>
+        {showMobileWarning && (
+          <MobileWarningModal
+            onClose={() => setShowMobileWarning(false)}
+            onDontShowAgain={handleDontShowAgain}
+          />
+        )}
+      </AnimatePresence>
+
       <div className="flex min-h-screen">
         {/* Desktop Sidebar */}
         <motion.aside
@@ -656,14 +734,14 @@ const MarkdownLoader = ({ filePath, title }: MarkdownLoaderProps) => {
             sidebarOpen ? "lg:ml-72" : "lg:ml-0"
           )}
         >
-          <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
+          <div className="max-w-none sm:max-w-4xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
               <motion.div
-                className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-8"
+                className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 p-2 sm:p-4 md:p-6 lg:p-8 overflow-x-auto"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}

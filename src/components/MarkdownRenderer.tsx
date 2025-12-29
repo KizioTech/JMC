@@ -23,17 +23,24 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
         __html: `
           /* Math styling - Responsive and centered */
           .katex-display {
-            text-align: center !important;
+            display: block !important;
             margin: 1rem auto !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 0.375rem;
             padding: 0.75rem;
             overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
             width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+          }
+
+          .katex-display > .katex {
+            display: inline-block;
+            text-align: center !important;
+            white-space: nowrap;
           }
           
           @media (min-width: 640px) {
@@ -42,6 +49,50 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               padding: 1rem;
               border-radius: 0.5rem;
             }
+          }
+
+          @media (max-width: 640px) {
+            .katex-display {
+              padding: 0.5rem;
+              margin: 0.75rem auto !important;
+            }
+          }
+
+          /* Dark mode support */
+          .dark .katex-display {
+            background: #1e293b;
+            border-color: #334155;
+          }
+
+          /* Scrollbar styling for math displays */
+          .katex-display::-webkit-scrollbar {
+            height: 6px;
+          }
+
+          .katex-display::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+          }
+
+          .katex-display::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+          }
+
+          .katex-display::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+          }
+
+          .dark .katex-display::-webkit-scrollbar-track {
+            background: #334155;
+          }
+
+          .dark .katex-display::-webkit-scrollbar-thumb {
+            background: #64748b;
+          }
+
+          .dark .katex-display::-webkit-scrollbar-thumb:hover {
+            background: #475569;
           }
           
           @media (min-width: 768px) {
@@ -381,7 +432,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               );
             },
             p: ({ children }) => (
-              <p className="font-serif mb-3 sm:mb-4 text-black leading-relaxed text-sm sm:text-base">
+              <p className="font-serif mb-3 sm:mb-4 text-black leading-relaxed text-base break-words">
                 {children}
               </p>
             ),
@@ -396,7 +447,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               </ol>
             ),
             li: ({ children }) => (
-              <li className="font-serif text-black mb-1.5 sm:mb-2 text-sm sm:text-base">
+              <li className="font-serif text-black mb-1.5 sm:mb-2 text-base break-words">
                 {children}
               </li>
             ),
