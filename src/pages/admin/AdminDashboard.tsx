@@ -1,9 +1,10 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabaseClient';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Video, BookOpen, GraduationCap } from 'lucide-react';
+import { TableSkeleton } from '@/components/ui/Skeletons';
+import { FileText, Video, BookOpen, GraduationCap, TrendingUp, Plus, Film } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 const AdminDashboard = () => {
   const { data: stats, isLoading } = useQuery({
@@ -15,7 +16,6 @@ const AdminDashboard = () => {
         supabase.from('subjects').select('*', { count: 'exact', head: true }),
         supabase.from('courses').select('*', { count: 'exact', head: true }),
       ]);
-      
       return {
         notes: notes.count || 0,
         tutorials: tutorials.count || 0,
@@ -28,7 +28,6 @@ const AdminDashboard = () => {
   const { data: recentActivity, isLoading: loadingActivity } = useQuery({
     queryKey: ['admin-recent'],
     queryFn: async () => {
-      // Get the 5 most recently updated notes
       const { data } = await supabase
         .from('notes')
         .select('id, title, updated_at, subjects(name)')
@@ -39,92 +38,175 @@ const AdminDashboard = () => {
   });
 
   const statCards = [
-    { title: 'Total Notes', value: stats?.notes || 0, icon: FileText, color: 'text-blue-500', link: '/admin/notes' },
-    { title: 'Total Tutorials', value: stats?.tutorials || 0, icon: Video, color: 'text-purple-500', link: '/admin/tutorials' },
-    { title: 'Subjects', value: stats?.subjects || 0, icon: BookOpen, color: 'text-green-500', link: '/admin/subjects' },
-    { title: 'Courses', value: stats?.courses || 0, icon: GraduationCap, color: 'text-orange-500', link: '/admin/courses' },
+    {
+      title: 'Notes Published',
+      value: stats?.notes || 0,
+      icon: FileText,
+      bg: 'bg-primary-fixed',
+      color: 'text-on-primary-fixed',
+      trend: '+4%',
+      trendColor: 'text-beginner-green',
+      link: '/admin/notes'
+    },
+    {
+      title: 'Tutorials Active',
+      value: stats?.tutorials || 0,
+      icon: Video,
+      bg: 'bg-tertiary-fixed',
+      color: 'text-on-tertiary-fixed',
+      trend: '+12%',
+      trendColor: 'text-beginner-green',
+      link: '/admin/tutorials'
+    },
+    {
+      title: 'Subjects Cataloged',
+      value: stats?.subjects || 0,
+      icon: BookOpen,
+      bg: 'bg-secondary-fixed',
+      color: 'text-on-secondary-fixed-variant',
+      trend: '0%',
+      trendColor: 'text-on-surface-variant',
+      link: '/admin/subjects'
+    },
+    {
+      title: 'Premium Courses',
+      value: stats?.courses || 0,
+      icon: GraduationCap,
+      bg: 'bg-surface-container-highest',
+      color: 'text-primary',
+      trend: '+2%',
+      trendColor: 'text-beginner-green',
+      link: '/admin/courses'
+    },
   ];
 
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const mins = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    if (mins < 60) return `${mins} mins ago`;
+    if (hours < 24) return `${hours} hours ago`;
+    return `${days} days ago`;
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="space-y-stack-lg">
+      {/* Stats Bento Grid */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
         {statCards.map((stat, i) => (
           <Link key={i} to={stat.link}>
-            <Card className="hover:border-primary/50 transition-colors">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
-                <stat.icon className={`w-4 h-4 ${stat.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {isLoading ? <div className="h-8 w-16 bg-muted rounded animate-pulse" /> : stat.value}
+            <div className="bg-white/70 backdrop-blur-md border border-outline-variant/80 p-6 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col justify-between">
+              <div className="flex justify-between items-start">
+                <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", stat.bg)}>
+                  <stat.icon className={cn("w-6 h-6", stat.color)} />
                 </div>
-              </CardContent>
-            </Card>
+                <span className={cn("font-label-caps text-label-caps flex items-center gap-1", stat.trendColor)}>
+                  <TrendingUp className="w-3 h-3" />
+                  {stat.trend}
+                </span>
+              </div>
+              <div className="mt-4">
+                <h3 className="font-body-sm text-body-sm text-on-surface-variant">{stat.title}</h3>
+                {isLoading ? (
+                  <div className="h-8 w-16 bg-surface-container-high rounded animate-pulse mt-1" />
+                ) : (
+                  <p className="font-headline-h1 text-headline-h1 font-bold text-primary">{stat.value}</p>
+                )}
+              </div>
+            </div>
           </Link>
         ))}
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Note Updates</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loadingActivity ? (
-              <div className="space-y-4">
-                {[1,2,3].map(i => <div key={i} className="h-12 bg-muted rounded animate-pulse" />)}
-              </div>
-            ) : recentActivity && recentActivity.length > 0 ? (
-              <div className="divide-y border rounded-md">
-                {recentActivity.map((note) => (
-                  <div key={note.id} className="flex justify-between items-center p-4">
-                    <div>
-                      <p className="font-medium text-sm">{note.title}</p>
-                      <p className="text-xs text-muted-foreground">{note.subjects?.name}</p>
+      {/* Two-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter items-start">
+        {/* Recent Activity */}
+        <section className="lg:col-span-2 bg-white/70 backdrop-blur-md border border-outline-variant/80 rounded-xl shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+            <h2 className="font-headline-h3 text-headline-h3 font-bold text-primary">Recent Activity</h2>
+            <Link to="/admin/notes" className="text-primary font-body-sm text-body-sm font-semibold hover:underline">View All</Link>
+          </div>
+          {loadingActivity ? (
+            <div className="p-6"><TableSkeleton /></div>
+          ) : recentActivity && recentActivity.length > 0 ? (
+            <div className="divide-y divide-outline-variant">
+              {recentActivity.map((note: any) => (
+                <div key={note.id} className="p-4 md:p-6 flex items-center justify-between hover:bg-surface-container-lowest transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-theorem-blue flex items-center justify-center shrink-0">
+                      <FileText className="w-5 h-5 text-on-tertiary-fixed-variant" />
                     </div>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(note.updated_at).toLocaleDateString()}
-                    </span>
+                    <div>
+                      <p className="font-body-md text-body-md font-semibold text-primary">{note.title}</p>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">
+                        {formatDate(note.updated_at)} in <span className="text-primary font-medium">{note.subjects?.name}</span>
+                      </p>
+                    </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">No recent activity found.</p>
-            )}
-          </CardContent>
-        </Card>
+                  <Link to={`/admin/notes/${note.id}`}>
+                    <button className="px-4 py-1.5 border border-outline rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:bg-primary hover:text-on-primary hover:border-primary transition-all">
+                      Edit
+                    </button>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-12 text-center">
+              <p className="font-body-md text-body-md text-on-surface-variant">No recent activity found.</p>
+            </div>
+          )}
+        </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Link to="/admin/notes/new" className="block w-full">
-              <div className="flex items-center gap-3 p-4 border rounded-md hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
-                  <FileText className="w-5 h-5" />
+        {/* Quick Actions Column */}
+        <aside className="space-y-stack-md">
+          <div className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-sm border border-outline-variant/80">
+            <h2 className="font-headline-h3 text-headline-h3 font-bold text-primary mb-stack-sm">Quick Actions</h2>
+            <div className="space-y-3">
+              <Link to="/admin/notes/new" className="block w-full">
+                <button className="w-full flex items-center justify-start gap-3 p-4 bg-primary text-on-primary rounded-lg hover:shadow-lg hover:scale-[1.01] transition-all active:scale-95">
+                  <div className="p-2 bg-white/10 rounded-md">
+                    <Plus className="w-5 h-5" />
+                  </div>
+                  <span className="font-body-md text-body-md font-semibold">Create New Note</span>
+                </button>
+              </Link>
+              <Link to="/admin/tutorials/new" className="block w-full">
+                <button className="w-full flex items-center justify-start gap-3 p-4 bg-surface-container-high text-on-surface rounded-lg hover:bg-surface-container-highest transition-all">
+                  <div className="p-2 rounded-md">
+                    <Film className="w-5 h-5 text-on-primary-container" />
+                  </div>
+                  <span className="font-body-md text-body-md font-semibold">Add Tutorial</span>
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Storage / Info Card */}
+          <div className="bg-tertiary-container text-white p-6 rounded-xl shadow-sm border border-outline-variant">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-label-caps text-label-caps opacity-80">Platform Health</h3>
+              <BookOpen className="w-5 h-5 opacity-60" />
+            </div>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between font-body-sm text-body-sm mb-1">
+                  <span>Content Coverage</span>
+                  <span className="font-bold">{stats ? Math.min(Math.round((stats.notes + stats.tutorials) * 2.5), 100) : 0}%</span>
                 </div>
-                <div>
-                  <p className="font-medium text-sm">Create New Note</p>
-                  <p className="text-xs text-muted-foreground">Write a new mathematical note or article</p>
+                <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+                  <div className="bg-secondary h-full rounded-full" style={{ width: `${stats ? Math.min(Math.round((stats.notes + stats.tutorials) * 2.5), 100) : 0}%` }}></div>
                 </div>
               </div>
-            </Link>
-            
-            <Link to="/admin/tutorials/new" className="block w-full">
-              <div className="flex items-center gap-3 p-4 border rounded-md hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded">
-                  <Video className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm">Create New Tutorial</p>
-                  <p className="text-xs text-muted-foreground">Add a new tutorial with video links and exercises</p>
-                </div>
-              </div>
-            </Link>
-          </CardContent>
-        </Card>
+              <p className="text-[11px] opacity-60 leading-relaxed italic pt-1">
+                Keep adding quality content to grow your academic platform.
+              </p>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );

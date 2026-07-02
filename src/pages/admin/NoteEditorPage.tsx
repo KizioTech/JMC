@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabaseClient';
 import ContentEditor from '@/components/admin/ContentEditor';
 import NoteRelationsPanel from '@/components/admin/NoteRelationsPanel';
+import { ContentSkeleton } from '@/components/ui/Skeletons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -99,7 +100,7 @@ export default function NoteEditorPage() {
     },
   });
 
-  if (isLoading) return <div className="p-6">Loading…</div>;
+  if (isLoading) return <div className="p-6"><ContentSkeleton /></div>;
 
   return (
     <div className="h-screen flex flex-col bg-background">

@@ -1,256 +1,257 @@
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import Particles from "@/components/ui/Particles";
-import { Button } from "@/components/ui/button";
-import { 
-  BookOpen, 
-  GraduationCap, 
-  Users, 
-  Trophy, 
-  Calculator, 
-  FileText, 
-  Video, 
-  Award,
-  ChevronRight,
-  Star
-} from "lucide-react";
+import { GraduationCap, Activity, Calendar, Users } from "lucide-react";
 
 const Index = () => {
-  const stats = [
-    { number: "50+", label: "Free Courses", icon: GraduationCap },
-    { number: "10K+", label: "Students", icon: Users },
-    { number: "200+", label: "Resources", icon: BookOpen },
-    { number: "95%", label: "Success Rate", icon: Trophy },
-  ];
-
-  const features = [
-    {
-      icon: Calculator,
-      title: "Comprehensive Curriculum",
-      description: "From basic algebra to advanced calculus, our structured courses cover every mathematical concept you need.",
-    },
-    {
-      icon: FileText,
-      title: "Practice Materials",
-      description: "Thousands of practice problems with detailed solutions to reinforce your understanding.",
-    },
-    {
-      icon: Video,
-      title: "Video Tutorials",
-      description: "Step-by-step video explanations that make complex topics easy to understand.",
-    },
-    {
-      icon: Award,
-      title: "Expert Content",
-      description: "Created by experienced educators with deep expertise in mathematics education.",
-    },
-  ];
-
-  const testimonials = [
-    {
-      text: "JMC Academics transformed my understanding of calculus. The notes are incredibly clear and well-organized.",
-      author: "Sarah M.",
-      role: "University Student",
-    },
-    {
-      text: "As a teacher, I recommend JMC to all my students. The quality of content is unmatched.",
-      author: "Prof. James K.",
-      role: "Mathematics Teacher",
-    },
-    {
-      text: "The step-by-step tutorials helped me ace my exams. I went from struggling to top of my class!",
-      author: "David L.",
-      role: "High School Student",
-    },
-  ];
-
-  const learningPath = [
-    { level: "Beginner", topics: "Algebra, Geometry, Basic Trigonometry" },
-    { level: "Intermediate", topics: "Pre-Calculus, Statistics, Advanced Algebra" },
-    { level: "Advanced", topics: "Calculus I & II, Linear Algebra, Differential Equations" },
-    { level: "Expert", topics: "Real Analysis, Abstract Algebra, Complex Analysis" },
-  ];
-
   return (
     <Layout>
-      <Particles />
-      
-      {/* Hero Section */}
-      <section className="hero-gradient text-primary-foreground py-20 md:py-24 lg:py-32 relative overflow-hidden">
-        <div className="math-bg absolute inset-0" />
-        <div className="max-w-5xl mx-auto px-4 text-center relative z-10">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 gradient-text animate-title-glow leading-tight motion-reduce:animate-none">
-            Master Mathematics with Expert-Crafted Resources
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 animate-fade-in-up motion-reduce:animate-none" style={{ animationDelay: "0.5s" }}>
-            Free online courses, textbooks, and tutorials designed to transform your mathematical journey. 
-            From fundamentals to advanced topics — learn at your own pace.
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center animate-fade-in-up motion-reduce:animate-none" style={{ animationDelay: "1s" }}>
-            <Link to="/library">
-              <Button size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 relative overflow-hidden btn-shimmer">
-                <BookOpen className="mr-2 w-5 h-5" />
-                Explore Library
-              </Button>
-            </Link>
-            <Link to="/courses">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 rounded-full bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-hero-dark transition-all">
-                <GraduationCap className="mr-2 w-5 h-5" />
-                View Courses
-              </Button>
-            </Link>
+      <main>
+        {/* Hero Section */}
+        <section className="relative min-h-[870px] flex items-center justify-center overflow-hidden hero-gradient">
+          <Particles />
+          <div className="absolute inset-0 z-0">
+            <img 
+              alt="Modern study environment with mathematical graphs" 
+              className="w-full h-full object-cover opacity-40" 
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5_HOwdJODMA0-RBd8mfPpgF4Cb7Hxs_ecD-pRGU1F5mal8wHsQIn7GkBgkJPuDP7pzmlDV9UWIqxd2CShsLemRM98LDy1DZ4ez3cyzPxqxiydY516Tu6PL9Flq52gufGtCtLeB5-N2KUUEw3pbdz_U2H84h4Yct6DBvvqlPlEV9v--4rprtgWASaWdVMHLjfJzbVd56Hw35vIVYNEzfVqpNN2C_vEvoJJDagu5F74tF7HXIPtWqSwrSxHSwVgsqSeJVKSLT5WIjw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-surface/60 via-transparent to-surface"></div>
           </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="bg-card py-16 relative z-10 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-4">
-            Trusted by Learners Worldwide
-          </h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-12 rounded-full" />
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div 
-                key={stat.label} 
-                className="text-center p-6 hover:-translate-y-2 focus-visible:-translate-y-2 focus-visible:ring-2 outline-none transition-transform"
-                tabIndex={0}
-              >
-                <stat.icon className="w-10 h-10 text-primary mx-auto mb-4" />
-                <span className="block text-4xl md:text-5xl font-extrabold text-primary mb-2">
-                  {stat.number}
-                </span>
-                <span className="text-lg text-muted-foreground font-medium">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 bg-gradient-to-b from-muted to-background">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-              Why Choose JMC Academics?
-            </h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full" />
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div 
-                key={feature.title}
-                className="bg-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-2 focus-visible:ring-2 focus-visible:-translate-y-2 outline-none border border-primary/10 relative overflow-hidden group"
-                tabIndex={0}
-              >
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary" />
-                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-focus-visible:bg-primary group-hover:scale-110 group-focus-visible:scale-110 transition-all will-change-transform">
-                  <feature.icon className="w-8 h-8 text-primary group-hover:text-primary-foreground group-focus-visible:text-primary-foreground transition-colors" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Learning Path Section */}
-      <section className="py-20 bg-card">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-              Your Learning Journey
-            </h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full" />
-            <p className="text-lg text-muted-foreground mt-6 max-w-2xl mx-auto">
-              Progress through our structured curriculum designed to take you from basics to mastery
+          <div className="relative z-10 text-center max-w-4xl px-margin-mobile py-stack-lg">
+            <span className="inline-block px-4 py-1.5 mb-stack-sm bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps rounded-full animate-fade-in-up">
+              ACADEMIC EXCELLENCE
+            </span>
+            <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-stack-md leading-tight">
+              Master Mathematics <br className="hidden md:block"/> with Precision.
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg max-w-2xl mx-auto">
+              Expert-led courses, interactive tutorials, and comprehensive academic notes for students who aim for excellence.
             </p>
-          </div>
-          <div className="relative">
-            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary -translate-y-1/2 rounded-full" />
-            <div className="grid lg:grid-cols-4 gap-8 relative z-10">
-              {learningPath.map((stage, index) => (
-                <div 
-                  key={stage.level}
-                  className="bg-background border-2 border-primary/20 rounded-2xl p-6 text-center relative hover:border-primary transition-colors focus-visible:ring-2 outline-none"
-                  tabIndex={0}
-                >
-                  <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                    {index + 1}
-                  </div>
-                  <h3 className="text-xl font-bold text-primary mb-2">{stage.level}</h3>
-                  <p className="text-muted-foreground text-sm">{stage.topics}</p>
-                </div>
-              ))}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/courses" className="w-full sm:w-auto">
+                <button className="w-full px-10 py-4 bg-primary text-on-primary font-headline-h3 text-headline-h3 rounded-lg hover:shadow-lg active:scale-95 transition-all duration-200">
+                  Explore Courses
+                </button>
+              </Link>
+              <Link to="/tutorials" className="w-full sm:w-auto">
+                <button className="w-full px-10 py-4 bg-surface/80 backdrop-blur-md border border-outline-variant text-primary font-headline-h3 text-headline-h3 rounded-lg hover:bg-surface-container-low active:scale-95 transition-all duration-200">
+                  View Tutorials
+                </button>
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 hero-gradient text-primary-foreground">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold gradient-text-gold mb-4">
-              What Our Students Say
-            </h2>
+        {/* Stat Strip */}
+        <section className="bg-primary-container py-12 px-margin-mobile md:px-margin-desktop">
+          <div className="max-w-container-max mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="flex flex-col gap-1">
+              <span className="font-headline-h2 text-headline-h2 text-primary-fixed">50+</span>
+              <span className="font-label-caps text-label-caps text-on-primary-container">Free Courses</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="font-headline-h2 text-headline-h2 text-primary-fixed">10K+</span>
+              <span className="font-label-caps text-label-caps text-on-primary-container">Students</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="font-headline-h2 text-headline-h2 text-primary-fixed">200+</span>
+              <span className="font-label-caps text-label-caps text-on-primary-container">Resources</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="font-headline-h2 text-headline-h2 text-primary-fixed">95%</span>
+              <span className="font-label-caps text-label-caps text-on-primary-container">Success Rate</span>
+            </div>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div 
-                key={index}
-                className="bg-primary-foreground/5 dark:bg-muted/50 backdrop-blur-sm border border-primary-foreground/10 rounded-2xl p-8 hover:-translate-y-2 focus-visible:-translate-y-2 focus-visible:ring-2 transition-all outline-none"
-                tabIndex={0}
-              >
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-secondary text-secondary" />
-                  ))}
+        </section>
+
+        {/* Why Choose Us Bento */}
+        <section className="py-stack-lg px-margin-mobile md:px-margin-desktop bg-surface">
+          <div className="max-w-container-max mx-auto">
+            <div className="text-center mb-stack-lg">
+              <h2 className="font-headline-h1 text-headline-h1 text-primary mb-4">Why Choose JMC Academics?</h2>
+              <p className="font-body-md text-body-md text-on-surface-variant max-w-xl mx-auto">
+                We combine traditional academic rigor with modern digital learning tools to provide an unparalleled educational experience.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-auto md:grid-rows-2 gap-6">
+              {/* Large Card */}
+              <div className="md:col-span-2 md:row-span-2 bg-surface-container-low border border-outline-variant rounded-xl p-8 flex flex-col justify-between group hover:shadow-md transition-all duration-300">
+                <div>
+                  <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-6 text-on-primary">
+                    <GraduationCap className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-headline-h2 text-headline-h2 mb-4">Expert Instructors</h3>
+                  <p className="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
+                    Learn from PhD holders and industry experts who specialize in breaking down complex mathematical concepts into digestible, applicable knowledge. Our pedagogy is rooted in clarity and deep understanding.
+                  </p>
                 </div>
-                <p className="text-lg italic mb-6 leading-relaxed">"{testimonial.text}"</p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xl font-bold" aria-hidden="true">
-                    {testimonial.author[0]}
-                  </div>
-                  <div>
-                    <p className="font-semibold">{testimonial.author}</p>
-                    <p className="text-muted-foreground text-sm">{testimonial.role}</p>
-                  </div>
+                <div className="w-full h-48 bg-surface-container-high rounded-lg overflow-hidden">
+                  <img 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    alt="A professional instructor teaching complex calculus formulas" 
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuASovT1DLwe7keVio4VwbdHbGQROmtH0fOhTNMa_9Ze_EgOftTHN8Z4SZgAvpkPxQ9CnoqapH86F2Nd7rR6zHJ-LxULuac330e6QXP1LUlbPtEOyQ4byYCdxrPZx0qsxEjVJHZLQftVvwssSt6NFzUROMluHaX1fnBIv-08_XaAduBGF3KQE51A261aPZtBSAC5HoA_cPyuyh3qgvDSZLhCoZXN-cfsAC_Yaye1Tx2amIdKy2VmmFiT_w3Vg3Ov3Z6JpUo_H5qrYOk"
+                  />
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-card">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-6">
-            Ready to Start Your Mathematical Journey?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Join thousands of students who have transformed their understanding of mathematics with JMC Academics.
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link to="/library">
-              <Button size="lg" className="text-lg px-8 py-6 rounded-full animate-glow-pulse">
-                Get Started Free
-                <ChevronRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Link to="/jmc-plus">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 rounded-full">
-                Learn About JMC Plus
-              </Button>
-            </Link>
+              {/* Wide Card */}
+              <div className="md:col-span-2 bg-example-amber border border-intermediate-yellow/30 rounded-xl p-8 flex items-center gap-6 group hover:translate-y-[-4px] transition-all duration-300">
+                <div className="flex-1">
+                  <h3 className="font-headline-h3 text-headline-h3 text-on-surface mb-2">Interactive Learning</h3>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">
+                    Step-by-step visualizations and real-time feedback systems help you master proofs and equations effectively.
+                  </p>
+                </div>
+                <Activity className="text-intermediate-yellow w-12 h-12 opacity-40 group-hover:scale-110 transition-transform" />
+              </div>
+
+              {/* Small Card 1 */}
+              <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 flex flex-col justify-center items-center text-center group hover:translate-y-[-4px] transition-all duration-300">
+                <Calendar className="text-primary w-8 h-8 mb-4" />
+                <h4 className="font-label-caps text-label-caps mb-2">Flexible Schedule</h4>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">Learn at your own pace with lifetime access.</p>
+              </div>
+
+              {/* Small Card 2 */}
+              <div className="bg-primary-container rounded-xl p-8 flex flex-col justify-center items-center text-center group hover:translate-y-[-4px] transition-all duration-300">
+                <Users className="text-primary-fixed w-8 h-8 mb-4" />
+                <h4 className="font-label-caps text-label-caps mb-2 text-on-primary-container">Community Support</h4>
+                <p className="font-body-sm text-body-sm text-on-primary-container/80">Connect with fellow students and mentors.</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Learning Path Timeline */}
+        <section className="py-stack-lg px-margin-mobile md:px-margin-desktop bg-surface-container-lowest overflow-hidden">
+          <div className="max-w-container-max mx-auto">
+            <div className="mb-stack-lg">
+              <h2 className="font-headline-h1 text-headline-h1 text-primary text-center">Your Path to Mastery</h2>
+            </div>
+            <div className="relative flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4 py-8">
+              {/* Timeline Line */}
+              <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-outline-variant -translate-y-1/2 z-0"></div>
+              
+              {/* Beginner */}
+              <div className="relative z-10 flex flex-col items-center max-w-[240px] text-center">
+                <div className="w-12 h-12 bg-beginner-green text-on-primary rounded-full flex items-center justify-center mb-4 font-bold shadow-lg">1</div>
+                <div className="bg-surface border border-outline-variant p-4 rounded-lg shadow-sm">
+                  <span className="block font-label-caps text-label-caps text-beginner-green mb-1">BEGINNER</span>
+                  <h4 className="font-headline-h3 text-headline-h3 mb-2">Foundations</h4>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">Master algebra, trigonometry, and the basics of logic.</p>
+                </div>
+              </div>
+              
+              {/* Intermediate */}
+              <div className="relative z-10 flex flex-col items-center max-w-[240px] text-center">
+                <div className="w-12 h-12 bg-intermediate-yellow text-on-primary rounded-full flex items-center justify-center mb-4 font-bold shadow-lg">2</div>
+                <div className="bg-surface border border-outline-variant p-4 rounded-lg shadow-sm">
+                  <span className="block font-label-caps text-label-caps text-intermediate-yellow mb-1">INTERMEDIATE</span>
+                  <h4 className="font-headline-h3 text-headline-h3 mb-2">Application</h4>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">Apply calculus and linear algebra to real-world modeling.</p>
+                </div>
+              </div>
+              
+              {/* Advanced */}
+              <div className="relative z-10 flex flex-col items-center max-w-[240px] text-center">
+                <div className="w-12 h-12 bg-advanced-red text-on-primary rounded-full flex items-center justify-center mb-4 font-bold shadow-lg">3</div>
+                <div className="bg-surface border border-outline-variant p-4 rounded-lg shadow-sm">
+                  <span className="block font-label-caps text-label-caps text-advanced-red mb-1">ADVANCED</span>
+                  <h4 className="font-headline-h3 text-headline-h3 mb-2">Mastery</h4>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">Deep dive into differential equations and analysis.</p>
+                </div>
+              </div>
+              
+              {/* Expert */}
+              <div className="relative z-10 flex flex-col items-center max-w-[240px] text-center">
+                <div className="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center mb-4 font-bold shadow-lg">4</div>
+                <div className="bg-surface border border-outline-variant p-4 rounded-lg shadow-sm">
+                  <span className="block font-label-caps text-label-caps text-primary mb-1">EXPERT</span>
+                  <h4 className="font-headline-h3 text-headline-h3 mb-2">Proofs</h4>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">Engage with abstract algebra and rigorous formal proofs.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials */}
+        <section className="py-stack-lg px-margin-mobile md:px-margin-desktop bg-surface">
+          <div className="max-w-container-max mx-auto">
+            <h2 className="font-headline-h2 text-headline-h2 text-center mb-stack-lg">Success Stories</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+              <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant flex flex-col">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 rounded-full overflow-hidden bg-outline-variant shrink-0">
+                    <img className="w-full h-full object-cover" alt="Sarah Jenkins" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIihTi_kn9LjXEWqhrZHnqjCETg7y0XTLh2x_DyaBgcQcabVz3W_ccgZzS0WRVarZzdm1rcFXdHsjJQr1f2n7hGG5GXSf8eSJnL7r9vDLHVMh2nIY2ts31Vs-HIs5hWW2ZCdnDAL2ncr-t2zQZ4aXeFWMe8kKu9-FHtvMTLNjGGnkCMleQAm0zuRUyjmec8Z4253fR7QLLV0KaS1rhu-PHX4tO5GbHVxy4Sd0Y76pWHNfSwWeobLFcTr9nrp-Z_6n0XZB3KRqIJ_c"/>
+                  </div>
+                  <div>
+                    <h4 className="font-headline-h3 text-headline-h3 text-[16px]">Sarah Jenkins</h4>
+                    <p className="font-label-caps text-label-caps text-on-surface-variant">MIT Undergraduate</p>
+                  </div>
+                </div>
+                <p className="font-body-md text-body-md italic text-on-surface-variant leading-relaxed">
+                  "The Calculus series on JMC Academics was the turning point for my engineering degree. The precision and clarity are unmatched compared to standard lectures."
+                </p>
+              </div>
+
+              <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant flex flex-col">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 rounded-full overflow-hidden bg-outline-variant shrink-0">
+                    <img className="w-full h-full object-cover" alt="David Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeNVr_XWuVM6exQ7dz7f4BNkpUk4iKDJddpm4fq0MoPc7g2TSP6kZniqIwkBcqAIt0M8hSOvmPZmtuEIS9v7ZfjDZV1lotGxR9HDncPr28f0YsXRCRmTvu_5G7Mws5hoTt9l5SKTqjCPoQdG19a0U4rNQeCjnM2vSKFttQuDEojxi7WuQfZb4ik3sUl6eMoiHAb8daNjIUH6Mp1oFU1UNyV8qeLqIyWsUCh_xsB6jb94rRpG5GcRbiAdHYFicxIYCnvEcHv-oOmT0"/>
+                  </div>
+                  <div>
+                    <h4 className="font-headline-h3 text-headline-h3 text-[16px]">David Chen</h4>
+                    <p className="font-label-caps text-label-caps text-on-surface-variant">Graduate Student</p>
+                  </div>
+                </div>
+                <p className="font-body-md text-body-md italic text-on-surface-variant leading-relaxed">
+                  "Complex analysis felt like a mountain until I found these resources. The interactive visualizations make abstract concepts feel tangible and clear."
+                </p>
+              </div>
+
+              <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant flex flex-col">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 rounded-full overflow-hidden bg-outline-variant shrink-0">
+                    <img className="w-full h-full object-cover" alt="Elena Rodriguez" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0I5ikIxq_UkP4merIguJHt-1pJGdxyapDYoAkmcnXs5eprXyU74BPGKiKCkHFx9-HM5p3Bfx_BiILVKx2QrO35E2U3CYdJwfiVajIJ9o0RMfSoLtT4VBWCL80bX8KntvqF1RW0jdKrUq_vXlPLgNXdbosgXnPSvHB7xKPYQFEIxUzjUmMbSaVkX4ThTat6JU_skcpqBdN_o-vp7N_iR-oKaDBaBFAiNtpSp8lhBmqZrvddB4S1e5y8VUu0GUiUT0RKjnqzhXB6UA"/>
+                  </div>
+                  <div>
+                    <h4 className="font-headline-h3 text-headline-h3 text-[16px]">Elena Rodriguez</h4>
+                    <p className="font-label-caps text-label-caps text-on-surface-variant">Data Scientist</p>
+                  </div>
+                </div>
+                <p className="font-body-md text-body-md italic text-on-surface-variant leading-relaxed">
+                  "The transition from theoretical math to applied statistics was made seamless through JMC. I highly recommend their community support forums for deep learning."
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="py-stack-lg px-margin-mobile md:px-margin-desktop text-center bg-primary-container relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,#dae2fd_1px,transparent_1px)] [background-size:20px_20px]"></div>
+          <div className="relative z-10 max-w-2xl mx-auto">
+            <h2 className="font-display-lg-mobile md:font-display-lg text-on-primary-fixed mb-4">Ready to Start Your Journey?</h2>
+            <p className="font-body-lg text-on-primary-container mb-stack-md">
+              Join over 10,000 students mastering mathematics today. Access premium resources and expert guidance.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/courses" className="w-full sm:w-auto">
+                <button className="w-full px-10 py-4 bg-secondary text-on-secondary font-headline-h3 text-headline-h3 rounded-lg hover:brightness-110 active:scale-95 transition-all">
+                  Enroll Now
+                </button>
+              </Link>
+              <Link to="/contact" className="w-full sm:w-auto">
+                <button className="w-full px-10 py-4 border border-on-primary-container text-on-primary-container font-headline-h3 text-headline-h3 rounded-lg hover:bg-white/5 active:scale-95 transition-all">
+                  Schedule a Demo
+                </button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
     </Layout>
   );
 };

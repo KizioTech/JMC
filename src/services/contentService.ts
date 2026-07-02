@@ -20,6 +20,8 @@ export interface NoteRow {
   subjects?: { slug: string; name: string };
   updated_at?: string;
   content_md?: string; // used for preview/extracts if needed
+  difficulty?: "Beginner" | "Intermediate" | "Advanced";
+  cover_image?: string;
 }
 
 export interface NoteWithContent extends NoteRow {
@@ -41,6 +43,7 @@ export interface TutorialRow {
   published: boolean;
   subjects?: { slug: string; name: string };
   notes?: { slug: string };
+  cover_image?: string;
 }
 
 export interface TutorialWithContent extends TutorialRow {

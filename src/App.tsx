@@ -22,6 +22,7 @@ const TutorialPage = lazy(() => import("./pages/TutorialPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const QuizPage = lazy(() => import("./components/QuizPage"));
+const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
 
 // Admin pages
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
@@ -43,7 +44,16 @@ const preloadCriticalRoutes = () => {
   import("./components/MarkdownRenderer");
 };
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60_000,
+      gcTime: 5 * 60_000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => {
   // Preload critical resources
@@ -64,6 +74,7 @@ const App = () => {
             <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<StudentDashboard />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>

@@ -15,23 +15,8 @@ export const ThemeSelector = () => {
           <Palette className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64" align="end">
+      <PopoverContent className="w-48" align="end">
         <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Theme</label>
-            <Select value={theme} onValueChange={setTheme}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default">Default</SelectItem>
-                <SelectItem value="blue">Blue</SelectItem>
-                <SelectItem value="green">Green</SelectItem>
-                <SelectItem value="purple">Purple</SelectItem>
-                <SelectItem value="pink">Pink</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Moon className="h-4 w-4" />

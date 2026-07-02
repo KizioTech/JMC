@@ -1,130 +1,52 @@
 import { Link } from "react-router-dom";
-import { Facebook, Youtube, Instagram, Mail, MessageCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Globe, Mail, Share2 } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const quickLinks = [
-    { name: "Home", path: "/" },
-    { name: "About Us", path: "/contact" },
-    { name: "Courses", path: "/courses" },
-    { name: "Resources", path: "/library" },
-    { name: "Contact", path: "/contact" },
-  ];
-
-  const subjects = [
-    "Algebra",
-    "Geometry",
-    "Calculus",
-    "Statistics",
-    "Trigonometry",
-    "Pre-Calculus",
-  ];
-
-  const socialLinks = [
-    { icon: Facebook, href: "https://web.facebook.com/profile.php?id=61576781334567", label: "Facebook" },
-    { icon: Youtube, href: "https://www.youtube.com/@jmcmath", label: "YouTube" },
-    { icon: Instagram, href: "https://www.instagram.com/kiziojosh/", label: "Instagram" },
-    { icon: MessageCircle, href: "https://wa.me/2659999788278", label: "WhatsApp" },
-  ];
-
   return (
-    <footer className="bg-hero-dark text-primary-foreground relative z-50">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About Section */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">JMC Mathematics</h3>
-            <p className="text-muted-foreground mb-6 leading-relaxed">
-              Delivering clean, structured, and effective learning materials designed for both self-learners
-              and schools. No fluff — just real math, made simple.
-            </p>
-            <div className="flex gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary transition-colors"
-                  aria-label={social.label}
-                >
-                  <social.icon className="w-5 h-5" />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.path}
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Subjects */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">Subjects</h3>
-            <ul className="space-y-2">
-              {subjects.map((subject) => (
-                <li key={subject}>
-                  <Link
-                    to="/library"
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {subject}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">Stay Updated</h3>
-            <p className="text-muted-foreground mb-4">
-              Subscribe to our newsletter for the latest math resources and tips.
-            </p>
-            <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-hero-mid border-hero-light text-primary-foreground placeholder:text-muted-foreground"
-              />
-              <Button type="submit" className="w-full">
-                <Mail className="w-4 h-4 mr-2" />
-                Subscribe
-              </Button>
-            </form>
-          </div>
+    <footer className="bg-surface-container-highest dark:bg-tertiary-container w-full mt-stack-lg">
+      <div className="py-stack-lg px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto">
+      <div className="col-span-1 md:col-span-1">
+        <div className="font-headline-h3 text-headline-h3 font-bold text-primary mb-4">JMC Academics</div>
+        <p className="font-body-sm text-body-sm text-on-surface-variant">
+          Empowering mathematical mastery through precision education and expert mentorship since 2024.
+        </p>
+      </div>
+      <div>
+        <h4 className="font-label-caps text-label-caps text-primary mb-4">Quick Links</h4>
+        <ul className="flex flex-col gap-2">
+          <li><Link className="font-body-sm text-body-sm text-on-surface-variant hover:underline" to="/">Home</Link></li>
+          <li><Link className="font-body-sm text-body-sm text-on-surface-variant hover:underline" to="/courses">Courses</Link></li>
+          <li><Link className="font-body-sm text-body-sm text-on-surface-variant hover:underline" to="/library">Library</Link></li>
+          <li><Link className="font-body-sm text-body-sm text-on-surface-variant hover:underline" to="/contact">Contact</Link></li>
+        </ul>
+      </div>
+      <div>
+        <h4 className="font-label-caps text-label-caps text-primary mb-4">Support</h4>
+        <ul className="flex flex-col gap-2">
+          <li><Link className="font-body-sm text-body-sm text-on-surface-variant hover:underline" to="#">Help Center</Link></li>
+          <li><Link className="font-body-sm text-body-sm text-on-surface-variant hover:underline" to="/privacy">Privacy Policy</Link></li>
+          <li><Link className="font-body-sm text-body-sm text-on-surface-variant hover:underline" to="/terms">Terms of Service</Link></li>
+          <li><Link className="font-body-sm text-body-sm text-on-surface-variant hover:underline" to="#">Accessibility</Link></li>
+        </ul>
+      </div>
+      <div>
+        <h4 className="font-label-caps text-label-caps text-primary mb-4">Newsletter</h4>
+        <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">Get the latest tutorial updates.</p>
+        <div className="flex gap-2">
+          <input className="bg-surface-container border border-outline-variant rounded px-3 py-2 text-body-sm w-full focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Email" type="email" />
+          <button className="bg-primary text-on-primary px-4 py-2 rounded font-label-caps text-label-caps hover:bg-primary/90 transition-colors">Join</button>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="border-t border-hero-light mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-sm">
-            © {currentYear} JMC Mathematics. All rights reserved.
-          </p>
-          <div className="flex gap-6">
-            <Link to="/privacy" className="text-muted-foreground text-sm hover:text-primary transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/terms" className="text-muted-foreground text-sm hover:text-primary transition-colors">
-              Terms of Service
-            </Link>
-          </div>
+      </div>
+      <div className="col-span-1 md:col-span-4 pt-8 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4">
+        <span className="font-body-sm text-body-sm text-on-surface-variant">© {currentYear} JMC Academics. Empowering mathematical mastery.</span>
+        <div className="flex gap-4">
+          <Globe className="w-5 h-5 text-on-surface-variant cursor-pointer hover:text-primary transition-colors" />
+          <Mail className="w-5 h-5 text-on-surface-variant cursor-pointer hover:text-primary transition-colors" />
+          <Share2 className="w-5 h-5 text-on-surface-variant cursor-pointer hover:text-primary transition-colors" />
         </div>
+      </div>
       </div>
     </footer>
   );
