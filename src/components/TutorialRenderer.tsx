@@ -77,70 +77,70 @@ const TutorialRenderer = ({ content }) => {
     <div className="tutorial-content">
       <style>{`
         .tutorial-content {
-          font-family: 'Times New Roman', Times, serif;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
           color: #374151;
-          line-height: 1.8;
+          line-height: 1.7;
         }
 
+        /* Heading hierarchy - properly scaled */
         .tutorial-content h1 {
-          font-size: 2.5rem;
-          font-weight: bold;
+          font-size: 2rem;
+          font-weight: 700;
           color: #111827;
-          margin-bottom: 1.5rem;
+          margin-top: 2rem;
+          margin-bottom: 1.25rem;
           padding-bottom: 0.75rem;
-          border-bottom: 3px solid #ef4444;
+          border-bottom: 3px solid #3b82f6;
         }
 
         .tutorial-content h2 {
-          font-size: 1.875rem;
-          font-weight: 600;
-          color: #111827;
-          margin-top: 3rem;
-          margin-bottom: 1.25rem;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .tutorial-content h2::before {
-          content: '';
-          width: 8px;
-          height: 32px;
-          background: linear-gradient(135deg, #ef4444, #dc2626);
-          border-radius: 4px;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #1f2937;
+          margin-top: 1.75rem;
+          margin-bottom: 1rem;
         }
 
         .tutorial-content h3 {
-          font-size: 1.5rem;
+          font-size: 1.25rem;
           font-weight: 600;
-          color: #1f2937;
-          margin-top: 2rem;
-          margin-bottom: 1rem;
-          padding-left: 1rem;
-          border-left: 4px solid #ef4444;
+          color: #374151;
+          margin-top: 1.5rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .tutorial-content h4 {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: #4b5563;
+          margin-top: 1.25rem;
+          margin-bottom: 0.5rem;
         }
 
         .tutorial-content p {
-          margin-bottom: 1.25rem;
-          font-size: 1.125rem;
+          margin-bottom: 1rem;
+          font-size: 1rem;
+          letter-spacing: 0.3px;
         }
 
         .tutorial-content ul, .tutorial-content ol {
-          margin: 1.5rem 0;
+          margin: 1.25rem 0;
           padding-left: 2rem;
         }
 
         .tutorial-content li {
-          margin-bottom: 0.75rem;
-          font-size: 1.125rem;
+          margin-bottom: 0.5rem;
+          font-size: 1rem;
+          line-height: 1.6;
         }
 
         .tutorial-content code {
           background: #f3f4f6;
           padding: 0.25rem 0.5rem;
           border-radius: 0.25rem;
-          font-size: 0.95em;
-          font-family: 'Courier New', monospace;
+          font-size: 0.9em;
+          font-family: 'Monaco', 'Courier New', monospace;
+          color: #dc2626;
         }
 
         .tutorial-content pre {
@@ -148,12 +148,37 @@ const TutorialRenderer = ({ content }) => {
           border-radius: 0.75rem;
           padding: 1.5rem;
           overflow-x: auto;
-          margin: 1.5rem 0;
+          margin: 1.25rem 0;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+        .tutorial-content pre code {
+          background: none;
+          color: inherit;
+          padding: 0;
+          border-radius: 0;
+        }
+
+        .tutorial-content blockquote {
+          border-left: 4px solid #3b82f6;
+          background: #eff6ff;
+          padding: 1rem 1.25rem;
+          margin: 1.25rem 0;
+          border-radius: 0.5rem;
+          color: #1e40af;
+        }
+
+        .tutorial-content blockquote p {
+          margin: 0;
+        }
+
         .mjx-chtml {
-          font-size: 1.15em !important;
+          font-size: 1em !important;
+        }
+
+        /* Math display spacing */
+        .tutorial-content .mjx-chtml[display="true"] {
+          margin: 1rem 0;
         }
 
         @keyframes slideDown {
@@ -203,18 +228,25 @@ const TutorialRenderer = ({ content }) => {
           box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
+        /* Responsive adjustments */
         @media (max-width: 768px) {
           .tutorial-content h1 {
-            font-size: 2rem;
+            font-size: 1.75rem;
           }
           .tutorial-content h2 {
-            font-size: 1.5rem;
+            font-size: 1.375rem;
           }
           .tutorial-content h3 {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
+          }
+          .tutorial-content h4 {
+            font-size: 1rem;
           }
           .tutorial-content p, .tutorial-content li {
-            font-size: 1rem;
+            font-size: 0.95rem;
+          }
+          .tutorial-content ul, .tutorial-content ol {
+            padding-left: 1.5rem;
           }
         }
       `}</style>
@@ -275,7 +307,7 @@ const TutorialRenderer = ({ content }) => {
                   </div>
                   <button
                     onClick={() => toggleSolution(section.index)}
-                    className="flex items-center gap-2 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 shadow-md"
+                    className="flex items-center gap-2 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white px-6 py-3 rounded-lg font-medium transition-all"
                   >
                     {visibleSolutions.has(section.index) ? (
                       <>
