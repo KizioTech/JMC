@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { 
   Heading2, Heading3, Bold, List, ListOrdered, Quote, Table2, 
-  Sigma, ChevronDown, ChevronUp, Eye, PenLine
+  Sigma, ChevronDown, ChevronUp, Eye, PenLine, Link as LinkIcon, Image as ImageIcon, Video
 } from "lucide-react";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -53,6 +53,17 @@ export default function MathRichTextEditor({
   const [tableData, setTableData] = useState<string[][]>(() => 
     Array(3).fill("").map(() => Array(2).fill(""))
   );
+
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkText, setLinkText] = useState('');
+
+  const [imageOpen, setImageOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [imageAlt, setImageAlt] = useState('');
+
+  const [videoOpen, setVideoOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
 
   useEffect(() => {
     setTableData(prev => {
@@ -117,6 +128,10 @@ export default function MathRichTextEditor({
     setTableData(Array(3).fill("").map(() => Array(2).fill("")));
   };
 
+  const insertLink = () => { insertSyntax(`[${linkText || 'link'}](${linkUrl})`); setLinkOpen(false); setLinkUrl(''); setLinkText(''); };
+  const insertImage = () => { insertSyntax(`![${imageAlt}](${imageUrl})`); setImageOpen(false); setImageUrl(''); setImageAlt(''); };
+  const insertVideo = () => { insertSyntax(`\n\n<!-- video: ${videoUrl} -->\n\n`); setVideoOpen(false); setVideoUrl(''); };
+
   const mainButtons: ToolbarBtn[] = [
     { icon: Heading2, label: "Heading 2", tooltip: "Large section heading", action: () => insertSyntax("## ") },
     { icon: Heading3, label: "Heading 3", tooltip: "Medium sub-heading", action: () => insertSyntax("### ") },
@@ -124,6 +139,9 @@ export default function MathRichTextEditor({
     { icon: List, label: "Bullet", tooltip: "Bullet list", action: () => insertSyntax("- ") },
     { icon: ListOrdered, label: "Number", tooltip: "Numbered list", action: () => insertSyntax("1. ") },
     { icon: Quote, label: "Quote", tooltip: "Blockquote / callout", action: () => insertSyntax("> ") },
+    { icon: LinkIcon, label: "Link", tooltip: "Insert link", action: () => setLinkOpen(true) },
+    { icon: ImageIcon, label: "Image", tooltip: "Insert image", action: () => setImageOpen(true) },
+    { icon: Video, label: "Video", tooltip: "Embed video", action: () => setVideoOpen(true) },
     { icon: Table2, label: "Table", tooltip: "Insert table", action: () => setIsTableDialogOpen(true) },
   ];
 
@@ -307,6 +325,66 @@ export default function MathRichTextEditor({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Link Dialog */}
+      <Dialog open={linkOpen} onOpenChange={setLinkOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>Insert Link</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Text to display</Label>
+              <Input value={linkText} onChange={(e) => setLinkText(e.target.value)} placeholder="e.g. Click here" />
+            </div>
+            <div className="space-y-2">
+              <Label>URL</Label>
+              <Input value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setLinkOpen(false)}>Cancel</Button>
+            <Button disabled={!linkUrl} onClick={insertLink}>Insert Link</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Dialog */}
+      <Dialog open={imageOpen} onOpenChange={setImageOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>Insert Image</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Image URL</Label>
+              <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." />
+            </div>
+            <div className="space-y-2">
+              <Label>Alt text</Label>
+              <Input value={imageAlt} onChange={(e) => setImageAlt(e.target.value)} placeholder="Description of image" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImageOpen(false)}>Cancel</Button>
+            <Button disabled={!imageUrl} onClick={insertImage}>Insert Image</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Video Dialog */}
+      <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>Embed Video</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>YouTube / Video URL</Label>
+              <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://youtube.com/watch?v=..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setVideoOpen(false)}>Cancel</Button>
+            <Button disabled={!videoUrl} onClick={insertVideo}>Embed Video</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

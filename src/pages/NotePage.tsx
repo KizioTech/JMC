@@ -5,8 +5,18 @@ import { getNoteBySlug, getNotesForSubject, NoteRow } from '@/services/contentSe
 import Layout from '@/components/layout/Layout';
 import { ContentSkeleton } from '@/components/ui/Skeletons';
 import { ArrowLeft, ArrowRight, BookOpen } from 'lucide-react';
+import NotesSidebar from '@/components/NotesSidebar';
 
 const MarkdownRenderer = lazy(() => import('@/components/MarkdownRenderer'));
+
+function stripLeadingDuplicateTitle(content: string, title: string) {
+  if (!content) return content;
+  const firstLine = content.trimStart().split('\n')[0]?.trim();
+  if (firstLine && firstLine.replace(/^#+\s*/, '').trim().toLowerCase() === title.trim().toLowerCase()) {
+    return content.trimStart().split('\n').slice(1).join('\n').trimStart();
+  }
+  return content;
+}
 
 const NotePage = () => {
   const { subject, slug } = useParams<{ subject: string; slug: string }>();
@@ -58,26 +68,34 @@ const NotePage = () => {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-16 flex gap-8">
         
-        {/* Breadcrumb */}
-        <div className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
-          <Link to="/library" className="hover:text-primary transition-colors flex items-center gap-1">
-            <BookOpen className="w-4 h-4" />
-            Library
-          </Link>
-          <span>/</span>
-          <span className="capitalize">{note.subjects?.name || subject}</span>
-          <span>/</span>
-          <span className="text-foreground font-medium">{note.title}</span>
-        </div>
+        <NotesSidebar
+          subjectName={note.subjects?.name || subject!}
+          notes={subjectNotes}
+          currentSlug={slug!}
+          subjectSlug={subject!}
+        />
+
+        <div className="flex-1 min-w-0">
+          {/* Breadcrumb */}
+          <div className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/library" className="hover:text-primary transition-colors flex items-center gap-1">
+              <BookOpen className="w-4 h-4" />
+              Library
+            </Link>
+            <span>/</span>
+            <span className="capitalize">{note.subjects?.name || subject}</span>
+            <span>/</span>
+            <span className="text-foreground font-medium">{note.title}</span>
+          </div>
 
         {/* Content */}
         <Suspense fallback={<ContentSkeleton />}>
           <div className="bg-card rounded-2xl shadow-sm border border-border/50 p-6 sm:p-10">
              <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-foreground">{note.title}</h1>
              <div className="prose prose-slate dark:prose-invert max-w-none">
-               <MarkdownRenderer content={note.content_md} />
+               <MarkdownRenderer content={stripLeadingDuplicateTitle(note.content_md, note.title)} />
              </div>
           </div>
         </Suspense>
@@ -111,6 +129,7 @@ const NotePage = () => {
           )}
         </div>
 
+        </div>
       </div>
     </Layout>
   );

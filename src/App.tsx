@@ -27,9 +27,9 @@ const QuizPage = lazy(() => import("./components/QuizPage"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const NotesManager = lazy(() => import("./pages/admin/NotesManager"));
-const NoteEditor = lazy(() => import("./pages/admin/NoteEditor"));
+const NoteEditorPage = lazy(() => import("./pages/admin/NoteEditorPage"));
 const TutorialsManager = lazy(() => import("./pages/admin/TutorialsManager"));
-const TutorialEditor = lazy(() => import("./pages/admin/TutorialEditor"));
+const TutorialEditorPage = lazy(() => import("./pages/admin/TutorialEditorPage"));
 const SubjectsManager = lazy(() => import("./pages/admin/SubjectsManager"));
 const QuizzesManager = lazy(() => import("./pages/admin/QuizzesManager"));
 const CoursesManager = lazy(() => import("./pages/admin/CoursesManager"));
@@ -69,14 +69,16 @@ const App = () => {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="notes" element={<NotesManager />} />
-              <Route path="notes/:id" element={<NoteEditor />} />
               <Route path="tutorials" element={<TutorialsManager />} />
-              <Route path="tutorials/:id" element={<TutorialEditor />} />
               <Route path="subjects" element={<SubjectsManager />} />
               <Route path="quizzes" element={<QuizzesManager />} />
               <Route path="courses" element={<CoursesManager />} />
               <Route path="media" element={<MediaManager />} />
             </Route>
+
+            {/* Full-page editors (outside AdminLayout) */}
+            <Route path="/admin/notes/:id/edit" element={<NoteEditorPage />} />
+            <Route path="/admin/tutorials/:id/edit" element={<TutorialEditorPage />} />
             
             <Route path="/jmcplus" element={<JMCPlus />} />
             <Route path="/contact" element={<Contact />} />

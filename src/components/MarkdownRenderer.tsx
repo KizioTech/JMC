@@ -1,10 +1,21 @@
+import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
 import 'katex/dist/katex.min.css';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
+
+// Helper to handle video embeds
+const embedVideoMarkers = (md: string) => {
+  return md.replace(/<!--\s*video:\s*(\S+)\s*-->/g, (_, url) => {
+    const yt = url.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=)([\w-]+)/);
+    const embedUrl = yt ? `https://www.youtube.com/embed/${yt[1]}` : url;
+    return `<div class="aspect-video my-4"><iframe src="${embedUrl}" class="w-full h-full rounded-lg" allowfullscreen></iframe></div>`;
+  });
+};
 
 // Configure math delimiters
 const mathOptions = {
@@ -288,7 +299,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       <div className="max-w-none" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
         <ReactMarkdown
           remarkPlugins={[[remarkMath, mathOptions], remarkGfm]}
-          rehypePlugins={[rehypeKatex]}
+          rehypePlugins={[rehypeKatex, rehypeRaw]}
           components={{
             code({ inline, className, children, ...props }: React.HTMLAttributes<HTMLElement> & { inline?: boolean }) {
               const match = /language-(\w+)/.exec(className || '');
@@ -472,7 +483,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
             ),
           }}
         >
-          {content}
+          {embedVideoMarkers(content)}
         </ReactMarkdown>
       </div>
     </>

@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Plus, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import CreateTutorialDialog from '@/components/admin/CreateTutorialDialog';
 
 const TutorialsManager = () => {
+  const [createOpen, setCreateOpen] = React.useState(false);
   const queryClient = useQueryClient();
   const { data: tutorials, isLoading } = useQuery({
     queryKey: ['admin-tutorials'],
@@ -34,11 +36,10 @@ const TutorialsManager = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Tutorials Manager</h1>
-        <Link to="/admin/tutorials/new">
-          <Button className="gap-2">
-            <Plus className="w-4 h-4" /> Create Tutorial
-          </Button>
-        </Link>
+        <Button className="gap-2" onClick={() => setCreateOpen(true)}>
+          <Plus className="w-4 h-4" /> Create Tutorial
+        </Button>
+        <CreateTutorialDialog open={createOpen} onOpenChange={setCreateOpen} />
       </div>
 
       <Card>
@@ -77,7 +78,7 @@ const TutorialsManager = () => {
                         )}
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
-                        <Link to={`/admin/tutorials/${tutorial.id}`}>
+                        <Link to={`/admin/tutorials/${tutorial.id}/edit`}>
                           <Button variant="outline" size="sm"><Edit2 className="w-4 h-4" /></Button>
                         </Link>
                         <Button 

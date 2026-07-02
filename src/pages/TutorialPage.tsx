@@ -8,6 +8,15 @@ import { ArrowLeft, ArrowRight, BookOpen, ExternalLink } from 'lucide-react';
 
 const TutorialRenderer = lazy(() => import('@/components/TutorialRenderer'));
 
+function stripLeadingDuplicateTitle(content: string, title: string) {
+  if (!content) return content;
+  const firstLine = content.trimStart().split('\n')[0]?.trim();
+  if (firstLine && firstLine.replace(/^#+\s*/, '').trim().toLowerCase() === title.trim().toLowerCase()) {
+    return content.trimStart().split('\n').slice(1).join('\n').trimStart();
+  }
+  return content;
+}
+
 const TutorialPage = () => {
   const { subject, slug } = useParams<{ subject: string; slug: string }>();
 
@@ -98,7 +107,7 @@ const TutorialPage = () => {
         {/* Content */}
         <Suspense fallback={<ContentSkeleton />}>
           <div className="bg-card rounded-2xl shadow-sm border border-border/50 overflow-hidden">
-            <TutorialRenderer content={tutorial.content_md} />
+            <TutorialRenderer content={stripLeadingDuplicateTitle(tutorial.content_md, tutorial.title)} />
           </div>
         </Suspense>
 

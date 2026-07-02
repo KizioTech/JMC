@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Plus, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import CreateNoteDialog from '@/components/admin/CreateNoteDialog';
 
 const NotesManager = () => {
+  const [createOpen, setCreateOpen] = React.useState(false);
   const queryClient = useQueryClient();
   const { data: notes, isLoading } = useQuery({
     queryKey: ['admin-notes'],
@@ -34,11 +36,10 @@ const NotesManager = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Notes Manager</h1>
-        <Link to="/admin/notes/new">
-          <Button className="gap-2">
-            <Plus className="w-4 h-4" /> Create Note
-          </Button>
-        </Link>
+        <Button className="gap-2" onClick={() => setCreateOpen(true)}>
+          <Plus className="w-4 h-4" /> Create Note
+        </Button>
+        <CreateNoteDialog open={createOpen} onOpenChange={setCreateOpen} />
       </div>
 
       <Card>
@@ -79,7 +80,7 @@ const NotesManager = () => {
                         {new Date(note.updated_at || '').toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
-                        <Link to={`/admin/notes/${note.id}`}>
+                        <Link to={`/admin/notes/${note.id}/edit`}>
                           <Button variant="outline" size="sm"><Edit2 className="w-4 h-4" /></Button>
                         </Link>
                         <Button 
