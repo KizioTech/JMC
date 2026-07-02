@@ -115,7 +115,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
             width: 100%;
             border-collapse: collapse;
             margin: 1.5rem 0;
-            font-family: "Times New Roman", Times, serif;
             border: 2px solid #e2e8f0;
             font-size: 0.9375rem;
           }
@@ -265,7 +264,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           }
           
           .md-box-title {
-            font-family: "Times New Roman", Times, serif;
             font-weight: 600;
             margin-bottom: 0.375rem;
             font-size: 0.9375rem;
@@ -296,7 +294,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           }
         `
       }} />
-      <div className="max-w-none" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
+      <div className="max-w-none">
         <ReactMarkdown
           remarkPlugins={[[remarkMath, mathOptions], remarkGfm]}
           rehypePlugins={[rehypeKatex, rehypeRaw]}
@@ -314,7 +312,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                   {String(children).replace(/\n$/, '')}
                 </SyntaxHighlighter>
               ) : (
-                <code className="bg-gray-100 px-1 py-0.5 sm:px-1.5 sm:py-0.5 rounded text-xs sm:text-sm font-mono" {...props}>
+                <code className="bg-gray-100 px-1 py-0.5 sm:px-1.5 sm:py-0.5 rounded text-xs sm:text-sm font-mono text-red-600" {...props}>
                   {children}
                 </code>
               );
@@ -325,7 +323,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               return (
                 <h1 
                   id={id}
-                  className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 border-b-2 border-red-500 pb-2"
+                  className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 pb-2 border-b-2 border-blue-500"
                 >
                   {children}
                 </h1>
@@ -337,9 +335,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               return (
                 <h2 
                   id={id}
-                  className="font-serif text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 mt-6 sm:mt-8 mb-3 sm:mb-4 pl-3 sm:pl-4 relative"
+                  className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mt-6 sm:mt-8 mb-3 sm:mb-4"
                 >
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 sm:h-6 md:h-7 bg-red-500 rounded-sm"></span>
                   {children}
                 </h2>
               );
@@ -350,7 +347,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               return (
                 <h3 
                   id={id}
-                  className="font-serif text-lg sm:text-xl md:text-2xl font-semibold text-gray-700 mt-4 sm:mt-5 md:mt-6 mb-2 sm:mb-3 pb-2 border-b border-gray-200"
+                  className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mt-4 sm:mt-5 md:mt-6 mb-2 sm:mb-3"
                 >
                   {children}
                 </h3>
@@ -362,7 +359,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               return (
                 <h4 
                   id={id}
-                  className="font-serif text-base sm:text-lg md:text-xl font-semibold text-gray-600 mt-3 sm:mt-4 md:mt-5 mb-2"
+                  className="text-base sm:text-lg md:text-xl font-semibold text-gray-700 mt-3 sm:mt-4 md:mt-5 mb-2"
                 >
                   {children}
                 </h4>
@@ -374,7 +371,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               return (
                 <h5 
                   id={id}
-                  className="font-serif text-sm sm:text-base md:text-lg font-semibold text-gray-500 mt-3 sm:mt-4 mb-2"
+                  className="text-sm sm:text-base md:text-lg font-semibold text-gray-600 mt-3 sm:mt-4 mb-2"
                 >
                   {children}
                 </h5>
@@ -386,14 +383,14 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               return (
                 <h6 
                   id={id}
-                  className="font-serif text-xs sm:text-sm md:text-base font-semibold text-gray-400 mt-3 mb-2"
+                  className="text-xs sm:text-sm md:text-base font-semibold text-gray-500 mt-3 mb-2"
                 >
                   {children}
                 </h6>
               );
             },
             p: ({ children }) => (
-              <p className="font-serif mb-3 sm:mb-4 text-black leading-relaxed text-base break-words max-w-prose">
+              <p className="mb-3 sm:mb-4 text-black leading-relaxed text-base break-words max-w-prose">
                 {children}
               </p>
             ),
@@ -408,7 +405,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               </ol>
             ),
             li: ({ children }) => (
-              <li className="font-serif text-black mb-1.5 sm:mb-2 text-base break-words leading-relaxed pl-1">
+              <li className="text-black mb-1.5 sm:mb-2 text-base break-words leading-relaxed pl-1">
                 {children}
               </li>
             ),
