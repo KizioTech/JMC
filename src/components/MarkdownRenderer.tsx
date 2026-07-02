@@ -215,39 +215,66 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                 </code>
               );
             },
-            h1: ({ children }) => {
-              const id = slugify(String(children));
-              return (
-                <h1 id={id} className={`${SCROLL_MARGIN} font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4 pb-3 border-b-2 border-blue-900`}>
-                  {children}
-                </h1>
-              );
-            },
-            h2: ({ children }) => {
-              const id = slugify(String(children));
-              return (
-                <h2 id={id} className={`${SCROLL_MARGIN} font-serif text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 mt-10 mb-4 flex items-baseline gap-3`}>
-                  <span className="inline-block w-6 h-px bg-blue-900 translate-y-[-0.4em]" aria-hidden="true" />
-                  {children}
-                </h2>
-              );
-            },
-            h3: ({ children }) => {
-              const id = slugify(String(children));
-              return (
-                <h3 id={id} className={`${SCROLL_MARGIN} font-serif text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 mt-8 mb-3`}>
-                  {children}
-                </h3>
-              );
-            },
-            h4: ({ children }) => {
-              const id = slugify(String(children));
-              return (
-                <h4 id={id} className={`${SCROLL_MARGIN} text-base sm:text-lg font-semibold text-slate-700 mt-6 mb-2`}>
-                  {children}
-                </h4>
-              );
-            },
+            // MarkdownRenderer.tsx (updated components section)
+// Replace the h1-h6 components with these:
+
+h1: ({ children }) => {
+  const id = slugify(String(children));
+  return (
+    <h1 
+      id={id} 
+      className={`${SCROLL_MARGIN} font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 pb-4 border-b-2 border-blue-900/20 cursor-pointer hover:text-blue-800 transition-colors group`}
+    >
+      <span className="relative">
+        {children}
+        <span className="absolute -right-6 top-0 opacity-0 group-hover:opacity-100 transition-opacity text-blue-400 text-base">#</span>
+      </span>
+    </h1>
+  );
+},
+h2: ({ children }) => {
+  const id = slugify(String(children));
+  return (
+    <h2 
+      id={id} 
+      className={`${SCROLL_MARGIN} font-serif text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 mt-10 mb-4 flex items-center gap-3 cursor-pointer hover:text-blue-800 transition-colors group`}
+    >
+      <span className="inline-block w-6 h-px bg-blue-900/30 group-hover:bg-blue-600 transition-colors" aria-hidden="true" />
+      <span className="relative">
+        {children}
+        <span className="absolute -right-5 top-0 opacity-0 group-hover:opacity-100 transition-opacity text-blue-400 text-sm">#</span>
+      </span>
+    </h2>
+  );
+},
+h3: ({ children }) => {
+  const id = slugify(String(children));
+  return (
+    <h3 
+      id={id} 
+      className={`${SCROLL_MARGIN} font-serif text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 mt-8 mb-3 cursor-pointer hover:text-blue-800 transition-colors group`}
+    >
+      <span className="relative">
+        {children}
+        <span className="absolute -right-4 top-0 opacity-0 group-hover:opacity-100 transition-opacity text-blue-400 text-xs">#</span>
+      </span>
+    </h3>
+  );
+},
+h4: ({ children }) => {
+  const id = slugify(String(children));
+  return (
+    <h4 
+      id={id} 
+      className={`${SCROLL_MARGIN} text-base sm:text-lg font-semibold text-slate-700 mt-6 mb-2 cursor-pointer hover:text-blue-800 transition-colors group`}
+    >
+      <span className="relative">
+        {children}
+        <span className="absolute -right-4 top-0 opacity-0 group-hover:opacity-100 transition-opacity text-blue-400 text-xs">#</span>
+      </span>
+    </h4>
+  );
+},
             h5: ({ children }) => {
               const id = slugify(String(children));
               return (
