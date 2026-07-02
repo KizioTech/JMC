@@ -1,20 +1,20 @@
 import React from 'react';
-import Layout from '@/components/layout/Layout';
-import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { BookOpen, Video, GraduationCap, Clock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { studentSidebarData } from '@/components/layout/data/studentSidebarData';
+import { useAuth } from '@/contexts/AuthContext';
 
 const StudentDashboard = () => {
   const { session, user, loading } = useAuth();
 
   if (loading) {
     return (
-      <Layout>
+      <DashboardLayout data={studentSidebarData(user)}>
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      </Layout>
+      </DashboardLayout>
     );
   }
 
@@ -23,7 +23,7 @@ const StudentDashboard = () => {
   }
 
   return (
-    <Layout>
+    <DashboardLayout data={studentSidebarData(user)}>
       <div className="bg-surface-container-lowest border-b border-outline-variant py-12">
         <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
           <h1 className="font-headline-h2 text-headline-h2 text-primary">
@@ -94,7 +94,7 @@ const StudentDashboard = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </DashboardLayout>
   );
 };
 

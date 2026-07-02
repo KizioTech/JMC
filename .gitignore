@@ -13,6 +13,7 @@ dist-ssr
 *.local
 .env
 documentatiom-and-sample UI
+shadcn-admin-main
 
 # Editor directories and files
 .vscode/*

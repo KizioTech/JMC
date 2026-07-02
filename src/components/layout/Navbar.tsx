@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const { session, signOut, role } = useAuth();
+  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -30,6 +31,19 @@ const Navbar = () => {
     { name: "Courses", path: "/courses" },
     { name: "Contact", path: "/contact" },
   ];
+
+  // Handle scroll for transparent background at top
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    
+    // Initial check
+    handleScroll();
+    
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Handle search
   useEffect(() => {
@@ -99,7 +113,12 @@ const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant shadow-sm transition-colors">
+    <header className={cn(
+      "fixed top-0 left-0 w-full z-50 transition-all duration-300",
+      isScrolled 
+        ? "bg-surface/80 backdrop-blur-md border-b border-outline-variant shadow-sm" 
+        : "bg-transparent border-transparent"
+    )}>
       <div className="max-w-container-max mx-auto flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 w-full">
       {/* Logo */}
       <Link to="/" className="font-headline-h3 text-headline-h3 font-bold text-primary shrink-0">

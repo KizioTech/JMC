@@ -1,47 +1,84 @@
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import Particles from "@/components/ui/Particles";
-import { GraduationCap, Activity, Calendar, Users } from "lucide-react";
+import { GraduationCap, Activity, Calendar, Users, BookOpen } from "lucide-react";
+import { PulseFitHero } from "@/components/ui/pulse-fit-hero";
 
 const Index = () => {
   return (
     <Layout>
       <main>
         {/* Hero Section */}
-        <section className="relative min-h-[870px] flex items-center justify-center overflow-hidden hero-gradient">
-          <Particles />
-          <div className="absolute inset-0 z-0">
-            <img 
-              alt="Modern study environment with mathematical graphs" 
-              className="w-full h-full object-cover opacity-40" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5_HOwdJODMA0-RBd8mfPpgF4Cb7Hxs_ecD-pRGU1F5mal8wHsQIn7GkBgkJPuDP7pzmlDV9UWIqxd2CShsLemRM98LDy1DZ4ez3cyzPxqxiydY516Tu6PL9Flq52gufGtCtLeB5-N2KUUEw3pbdz_U2H84h4Yct6DBvvqlPlEV9v--4rprtgWASaWdVMHLjfJzbVd56Hw35vIVYNEzfVqpNN2C_vEvoJJDagu5F74tF7HXIPtWqSwrSxHSwVgsqSeJVKSLT5WIjw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-surface/60 via-transparent to-surface"></div>
-          </div>
-          <div className="relative z-10 text-center max-w-4xl px-margin-mobile py-stack-lg">
-            <span className="inline-block px-4 py-1.5 mb-stack-sm bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps rounded-full animate-fade-in-up">
-              ACADEMIC EXCELLENCE
-            </span>
-            <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-stack-md leading-tight">
-              Master Mathematics <br className="hidden md:block"/> with Precision.
-            </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg max-w-2xl mx-auto">
-              Expert-led courses, interactive tutorials, and comprehensive academic notes for students who aim for excellence.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/courses" className="w-full sm:w-auto">
-                <button className="w-full px-10 py-4 bg-primary text-on-primary font-headline-h3 text-headline-h3 rounded-lg hover:shadow-lg active:scale-95 transition-all duration-200">
-                  Explore Courses
-                </button>
-              </Link>
-              <Link to="/tutorials" className="w-full sm:w-auto">
-                <button className="w-full px-10 py-4 bg-surface/80 backdrop-blur-md border border-outline-variant text-primary font-headline-h3 text-headline-h3 rounded-lg hover:bg-surface-container-low active:scale-95 transition-all duration-200">
-                  View Tutorials
-                </button>
-              </Link>
+        <PulseFitHero
+          logo={
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-primary" />
+              <span className="text-primary font-bold">JMC Academics</span>
             </div>
-          </div>
-        </section>
+          }
+          navigation={[
+            { label: "Courses", onClick: () => window.location.href = '/courses' },
+            { label: "Tutorials", onClick: () => window.location.href = '/tutorials' },
+            { label: "Library", onClick: () => window.location.href = '/library' },
+            { label: "Contact", onClick: () => window.location.href = '/contact' },
+          ]}
+          ctaButton={{
+            label: "Sign In",
+            onClick: () => window.location.href = '/auth',
+          }}
+          title="Master Mathematics with Precision."
+          subtitle="Expert-led courses, interactive tutorials, and comprehensive academic notes for students who aim for excellence."
+          primaryAction={{
+            label: "Explore Courses",
+            onClick: () => window.location.href = '/courses',
+          }}
+          secondaryAction={{
+            label: "View Tutorials",
+            onClick: () => window.location.href = '/tutorials',
+          }}
+          disclaimer="*Join 10,000+ students worldwide"
+          socialProof={{
+            avatars: [
+              "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop",
+              "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+              "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=150&h=150&fit=crop",
+              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+            ],
+            text: "Trusted by top students",
+          }}
+          programs={[
+            {
+              image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=500&fit=crop",
+              category: "BEGINNER",
+              title: "Algebra Fundamentals",
+              onClick: () => window.location.href = '/courses',
+            },
+            {
+              image: "https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?w=400&h=500&fit=crop",
+              category: "INTERMEDIATE",
+              title: "Calculus I",
+              onClick: () => window.location.href = '/courses',
+            },
+            {
+              image: "https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?w=400&h=500&fit=crop",
+              category: "ADVANCED",
+              title: "Linear Algebra",
+              onClick: () => window.location.href = '/courses',
+            },
+            {
+              image: "https://images.unsplash.com/photo-1596496181848-3091d4878b24?w=400&h=500&fit=crop",
+              category: "ALL LEVELS",
+              title: "Discrete Mathematics",
+              onClick: () => window.location.href = '/courses',
+            },
+            {
+              image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=500&fit=crop",
+              category: "EXAM PREP",
+              title: "Finals Mastery",
+              onClick: () => window.location.href = '/courses',
+            },
+          ]}
+        />
 
         {/* Stat Strip */}
         <section className="bg-primary-container py-12 px-margin-mobile md:px-margin-desktop">
