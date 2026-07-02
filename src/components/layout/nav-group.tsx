@@ -33,10 +33,15 @@ import {
   type NavGroup as NavGroupProps,
 } from './types'
 
+// Type guard to check if NavItem is NavCollapsible
+function isNavCollapsible(item: NavItem): item is NavCollapsible {
+  return 'items' in item && Array.isArray(item.items) && item.items.length > 0
+}
+
 export function NavGroup({ title, items }: NavGroupProps) {
   const { state, isMobile } = useSidebar()
   const location = useLocation()
-  const href = location.pathname // Use pathname instead of href
+  const href = location.pathname
 
   return (
     <SidebarGroup>
@@ -45,15 +50,18 @@ export function NavGroup({ title, items }: NavGroupProps) {
         {items.map((item) => {
           const key = `${item.title}-${item.url}`
 
-          if (!item.items)
-            return <SidebarMenuLink key={key} item={item} href={href} />
+          // Check if it's a collapsible item with children
+          if (isNavCollapsible(item)) {
+            if (state === 'collapsed' && !isMobile) {
+              return (
+                <SidebarMenuCollapsedDropdown key={key} item={item} href={href} />
+              )
+            }
+            return <SidebarMenuCollapsible key={key} item={item} href={href} />
+          }
 
-          if (state === 'collapsed' && !isMobile)
-            return (
-              <SidebarMenuCollapsedDropdown key={key} item={item} href={href} />
-            )
-
-          return <SidebarMenuCollapsible key={key} item={item} href={href} />
+          // Otherwise it's a regular link
+          return <SidebarMenuLink key={key} item={item as NavLink} href={href} />
         })}
       </SidebarMenu>
     </SidebarGroup>

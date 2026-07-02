@@ -116,6 +116,37 @@
     --warning-border: 0 84% 60%;
   }
 }
+/* src/index.css or src/globals.css */
+
+/* Google Fonts are loaded dynamically, but we need fallback classes */
+
+.font-inter {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-playfair-display {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+}
+
+.font-jetbrains-mono {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+.font-system {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.font-sans-serif {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.font-serif {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.font-monospace {
+  font-family: 'Courier New', monospace;
+}
 
 @layer base {
   * {

@@ -1,8 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { fonts } from '@/config/fonts'
+import { fonts, type Font, fontImports, fontClassNames } from '@/config/fonts'
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
-
-type Font = (typeof fonts)[number]
 
 const FONT_COOKIE_NAME = 'font'
 const FONT_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
@@ -21,13 +19,38 @@ export function FontProvider({ children }: { children: React.ReactNode }) {
     return fonts.includes(savedFont as Font) ? (savedFont as Font) : fonts[0]
   })
 
+  // Load Google Fonts when font changes
   useEffect(() => {
-    const applyFont = (font: string) => {
+    const loadFont = async (font: Font) => {
+      const fontImport = fontImports[font]
+      
+      // If it's a Google Font, load it
+      if (fontImport) {
+        // Check if the font is already loaded
+        const existingLink = document.querySelector(`link[href="${fontImport}"]`)
+        if (!existingLink) {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = fontImport
+          document.head.appendChild(link)
+        }
+      }
+    }
+
+    loadFont(font)
+  }, [font])
+
+  useEffect(() => {
+    const applyFont = (font: Font) => {
       const root = document.documentElement
+      
+      // Remove existing font classes
       root.classList.forEach((cls) => {
         if (cls.startsWith('font-')) root.classList.remove(cls)
       })
-      root.classList.add(`font-${font}`)
+      
+      // Add new font class
+      root.classList.add(fontClassNames[font])
     }
 
     applyFont(font)
@@ -44,7 +67,9 @@ export function FontProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <FontContext.Provider value={{ font, setFont, resetFont }}>{children}</FontContext.Provider>
+    <FontContext.Provider value={{ font, setFont, resetFont }}>
+      {children}
+    </FontContext.Provider>
   )
 }
 

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { Session, User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabaseClient';
 
 interface AuthContextType {
@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchRole = async (userId: string) => {
+  const fetchRole = useCallback(async (userId: string) => {
     try {
       const { data, error } = await supabase.from('profiles').select('role').eq('id', userId).single();
       if (!error && data) {
@@ -43,9 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setRole(null);
       return null;
     }
-  };
+  }, []);
 
-  const handleAuthError = async (error: any) => {
+  const handleAuthError = useCallback(async (error: AuthError | { status?: number; message?: string }) => {
     // Handle refresh token errors
     if (error?.status === 400 || error?.message?.includes('refresh_token')) {
       console.warn('Invalid session detected, clearing...');
@@ -56,9 +56,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return true;
     }
     return false;
-  };
+  }, []);
 
-  const refreshSession = async () => {
+  const refreshSession = useCallback(async () => {
     try {
       const { data, error } = await supabase.auth.refreshSession();
       if (error) {
@@ -81,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error refreshing session:', error);
       setLoading(false);
     }
-  };
+  }, [handleAuthError, fetchRole]);
 
   useEffect(() => {
     let mounted = true;
@@ -125,20 +125,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event, newSession) => {
         if (!mounted) return;
 
         // Handle token refresh errors
-        if (event === 'TOKEN_REFRESHED' && !session) {
+        if (event === 'TOKEN_REFRESHED' && !newSession) {
           await handleAuthError({ status: 400, message: 'refresh_token' });
           return;
         }
 
-        setSession(session);
-        setUser(session?.user ?? null);
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
         
-        if (session?.user) {
-          await fetchRole(session.user.id);
+        if (newSession?.user) {
+          await fetchRole(newSession.user.id);
         } else {
           setRole(null);
         }
@@ -146,26 +146,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Try to refresh session periodically (every 30 minutes)
-    const refreshInterval = setInterval(() => {
-      if (session) {
-        refreshSession();
-      }
-    }, 30 * 60 * 1000);
-
     return () => {
       mounted = false;
       subscription.unsubscribe();
+    };
+  }, [handleAuthError, fetchRole]); // Added dependencies
+
+  // Separate effect for refresh interval
+  useEffect(() => {
+    if (!session) return;
+
+    const refreshInterval = setInterval(() => {
+      refreshSession();
+    }, 30 * 60 * 1000);
+
+    return () => {
       clearInterval(refreshInterval);
     };
-  }, []);
+  }, [session, refreshSession]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-  };
+  }, []);
 
-  const signUp = async (email: string, password: string, fullName?: string) => {
+  const signUp = useCallback(async (email: string, password: string, fullName?: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -174,9 +179,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       },
     });
     if (error) throw error;
-  };
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -190,22 +195,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       setRole(null);
     }
-  };
+  }, []);
+
+  const value = useCallback(() => ({
+    session,
+    user,
+    role,
+    loading,
+    signIn,
+    signUp,
+    signOut,
+    refreshSession
+  }), [session, user, role, loading, signIn, signUp, signOut, refreshSession]);
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        session, 
-        user, 
-        role, 
-        loading, 
-        signIn, 
-        signUp, 
-        signOut,
-        refreshSession 
-      }}
-    >
+    <AuthContext.Provider value={value()}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+// Export types for use in other files
+export type { AuthContextType };
