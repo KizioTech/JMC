@@ -1,4 +1,6 @@
 // services/searchService.ts
+import { supabase } from '@/lib/supabaseClient';
+
 export interface SearchResult {
   id: string;
   title: string;
@@ -449,3 +451,54 @@ export const searchContent = async (query: string): Promise<SearchResult[]> => {
 
   return results;
 };
+
+// ——————————————————————————————————————————————————
+// DB-backed full-text search (Postgres RPC)
+// Falls back to empty array if DB unavailable.
+// ——————————————————————————————————————————————————
+export async function searchContentDB(query: string): Promise<SearchResult[]> {
+  if (!query.trim()) return [];
+
+  try {
+    const [notesRes, tutorialsRes] = await Promise.all([
+      supabase.rpc('search_notes', { search_query: query }),
+      supabase.rpc('search_tutorials', { search_query: query }),
+    ]);
+
+    const results: SearchResult[] = [];
+
+    (notesRes.data ?? []).forEach((row: {
+      id: string; slug: string; title: string; subject_id: string; rank: number
+    }) => {
+      results.push({
+        id: row.id,
+        title: row.title,
+        description: '',
+        type: 'note',
+        path: `/notes/${row.slug}`,
+        category: 'Study Notes',
+        author: 'Josophat Makawa',
+        tags: ['note'],
+      });
+    });
+
+    (tutorialsRes.data ?? []).forEach((row: {
+      id: string; slug: string; title: string; subject_id: string; rank: number
+    }) => {
+      results.push({
+        id: row.id,
+        title: row.title,
+        description: '',
+        type: 'tutorial',
+        path: `/tutorials/${row.slug}`,
+        category: 'Tutorials',
+        author: 'Josophat Makawa',
+        tags: ['tutorial'],
+      });
+    });
+
+    return results;
+  } catch {
+    return [];
+  }
+}

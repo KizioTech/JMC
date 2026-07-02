@@ -4,77 +4,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Clock, BookOpen } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import { useQuery } from "@tanstack/react-query";
+import { getPublishedCourses } from "@/services/courseService";
+import { NoteCardSkeleton } from "@/components/ui/Skeletons";
+
+const getLevelColor = (level: string | null) => {
+  switch (level) {
+    case "Beginner":
+      return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+    case "Intermediate":
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+    case "Advanced":
+      return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+    default:
+      return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
+  }
+};
 
 const Courses = () => {
-  const courses = [
-    {
-      id: "advanced-calculus",
-      title: "Advanced Calculus",
-      description: "Master the fundamentals of differential and integral calculus with our comprehensive course.",
-      level: "Advanced",
-      duration: "12 weeks",
-      image: "/assets/images/calculus.jpg",
-      alt: "Advanced Calculus Course"
-    },
-    {
-      id: "linear-algebra",
-      title: "Linear Algebra",
-      description: "Learn vectors, matrices, and linear transformations in this essential mathematics course.",
-      level: "Intermediate",
-      duration: "10 weeks",
-      image: "/assets/images/linear-algebra.jpg",
-      alt: "Linear Algebra Course"
-    },
-    {
-      id: "algebra-fundamentals",
-      title: "Algebra Fundamentals",
-      description: "Build a solid foundation in algebra with step-by-step explanations and practice problems.",
-      level: "Beginner",
-      duration: "8 weeks",
-      image: "/assets/images/algebra.jpg",
-      alt: "Algebra Fundamentals Course"
-    },
-    {
-      id: "statistics-probability",
-      title: "Statistics & Probability",
-      description: "Understand data analysis, probability distributions, and statistical inference.",
-      level: "Intermediate",
-      duration: "14 weeks",
-      image: "/assets/images/statistics.jfif",
-      alt: "Statistics & Probability Course"
-    },
-    {
-      id: "geometry-mastery",
-      title: "Geometry Mastery",
-      description: "Explore shapes, angles, and spatial relationships in this comprehensive geometry course.",
-      level: "Beginner",
-      duration: "10 weeks",
-      image: "/assets/images/geometry.jfif",
-      alt: "Geometry Mastery Course"
-    },
-    {
-      id: "trigonometry",
-      title: "Trigonometry",
-      description: "Master sine, cosine, tangent, and their applications in real-world problems.",
-      level: "Intermediate",
-      duration: "9 weeks",
-      image: "/assets/images/trig.jfif",
-      alt: "Trigonometry Course"
-    }
-  ];
-
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case "Beginner":
-        return "bg-green-100 text-green-800";
-      case "Intermediate":
-        return "bg-yellow-100 text-yellow-800";
-      case "Advanced":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  const { data: courses = [], isLoading } = useQuery({
+    queryKey: ["courses"],
+    queryFn: getPublishedCourses,
+  });
 
   return (
     <Layout>
@@ -84,6 +35,7 @@ const Courses = () => {
         <meta name="keywords" content="free mathematics courses, online math courses, calculus courses, algebra courses, geometry courses, statistics courses, JMC Academics" />
         <link rel="canonical" href="https://jmcacademics.netlify.app/courses" />
       </Helmet>
+
       {/* Hero Section */}
       <section className="hero-gradient text-primary-foreground py-16 relative overflow-hidden">
         <div className="math-bg absolute inset-0" />
@@ -98,45 +50,63 @@ const Courses = () => {
       </section>
 
       {/* Courses Grid */}
-      <section className="py-12 bg-background">
+      <section className="py-12 bg-background min-h-[50vh]">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
-              <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1">
-                <div className="aspect-video overflow-hidden">
-                  <img
-                    src={course.image}
-                    alt={course.alt}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform hover:scale-105"
-                  />
-                </div>
-                <CardHeader>
-                  <CardTitle className="text-xl">{course.title}</CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {course.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between mb-4">
-                    <Badge className={getLevelColor(course.level)}>
-                      {course.level}
-                    </Badge>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4" />
-                      <span>{course.duration}</span>
-                    </div>
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i}><NoteCardSkeleton /></div>
+              ))
+            ) : courses.length === 0 ? (
+              <p className="col-span-full text-center text-muted-foreground py-12">No courses are currently available. Check back soon!</p>
+            ) : (
+              courses.map((course) => (
+                <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 flex flex-col">
+                  <div className="aspect-video overflow-hidden bg-muted shrink-0">
+                    {course.cover_image ? (
+                      <img
+                        src={course.cover_image}
+                        alt={course.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <BookOpen className="w-12 h-12 text-muted-foreground/40" />
+                      </div>
+                    )}
                   </div>
-                  <Button
-                    className="w-full gap-2"
-                    onClick={() => alert('Enrollment feature coming soon!')}
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    Enroll Now
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                  <CardHeader className="flex-none">
+                    <CardTitle className="text-xl">{course.title}</CardTitle>
+                    <CardDescription className="line-clamp-3">
+                      {course.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col justify-end">
+                    <div className="flex items-center justify-between mb-4 mt-auto">
+                      {course.level && (
+                        <Badge className={getLevelColor(course.level)}>
+                          {course.level}
+                        </Badge>
+                      )}
+                      {course.duration_weeks && (
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Clock className="w-4 h-4" />
+                          <span>{course.duration_weeks} weeks</span>
+                        </div>
+                      )}
+                    </div>
+                    <Button
+                      className="w-full gap-2"
+                      onClick={() => alert("Enrollment feature coming soon!")}
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      Enroll Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       </section>

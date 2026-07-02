@@ -11,8 +11,10 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { searchContent, getTypeLabel, getTypeColor, type SearchResult } from "@/services/searchService";
 import { ThemeSelector } from "@/components/ThemeSelector";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
+  const { session, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -287,12 +289,26 @@ const Navbar = () => {
               JMC Plus
             </Button>
           </Link>
-          <Link to="/auth">
-            <Button variant="outline" className="gap-2">
-              <User className="w-4 h-4" />
-              Sign In
-            </Button>
-          </Link>
+          {session ? (
+            <>
+              <Link to="/admin">
+                <Button variant="ghost" className="gap-2">
+                  Admin
+                </Button>
+              </Link>
+              <Button variant="outline" className="gap-2" onClick={() => signOut()}>
+                <User className="w-4 h-4" />
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <Link to="/auth">
+              <Button variant="outline" className="gap-2">
+                <User className="w-4 h-4" />
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -473,12 +489,26 @@ const Navbar = () => {
                   JMC Plus
                 </Button>
               </Link>
-              <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full gap-2">
-                  <User className="w-4 h-4" />
-                  Sign In
-                </Button>
-              </Link>
+              {session ? (
+                <>
+                  <Link to="/admin" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full gap-2">
+                      Admin
+                    </Button>
+                  </Link>
+                  <Button variant="outline" className="w-full gap-2" onClick={() => { signOut(); setMobileMenuOpen(false); }}>
+                    <User className="w-4 h-4" />
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full gap-2">
+                    <User className="w-4 h-4" />
+                    Sign In
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

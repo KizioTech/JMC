@@ -24,40 +24,29 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           /* Math styling - Responsive and centered */
           .katex-display {
             display: block !important;
-            margin: 1rem auto !important;
+            margin: 1.5rem auto !important;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 0.375rem;
-            padding: 0.75rem;
+            border-radius: 0.5rem;
+            padding: 1rem;
             overflow-x: auto;
             overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
           }
 
           .katex-display > .katex {
             display: inline-block;
             text-align: center !important;
             white-space: nowrap;
+            scroll-snap-align: start;
+            padding: 0 1rem;
           }
           
-          @media (min-width: 640px) {
-            .katex-display {
-              margin: 1.5rem auto !important;
-              padding: 1rem;
-              border-radius: 0.5rem;
-            }
-          }
-
-          @media (max-width: 640px) {
-            .katex-display {
-              padding: 0.5rem;
-              margin: 0.75rem auto !important;
-            }
-          }
-
           /* Dark mode support */
           .dark .katex-display {
             background: #1e293b;
@@ -95,37 +84,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
             background: #475569;
           }
           
-          @media (min-width: 768px) {
-            .katex-display {
-              padding: 1.25rem;
-            }
-          }
-          
-          @media (min-width: 1024px) {
-            .katex-display {
-              padding: 1.5rem;
-            }
-          }
-          
-          .katex-display > .katex {
-            text-align: center !important;
-            margin: 0 auto !important;
-          }
-          
           .katex {
-            font-size: 1em;
-          }
-          
-          @media (min-width: 640px) {
-            .katex {
-              font-size: 1.05em;
-            }
-          }
-          
-          @media (min-width: 768px) {
-            .katex {
-              font-size: 1.1em;
-            }
+            font-size: clamp(1rem, 1vw + 0.5rem, 1.15rem);
           }
           
           /* Override any conflicting styles */
@@ -143,31 +103,20 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
             font-family: "Times New Roman", Times, serif;
             border: 2px solid #e2e8f0;
-            border-radius: 0.375rem;
-            overflow: hidden;
-            font-size: 0.875rem;
-          }
-          
-          @media (min-width: 640px) {
-            table {
-              margin: 1.25rem 0;
-              border-radius: 0.5rem;
-              font-size: 0.9375rem;
-            }
+            font-size: 0.9375rem;
           }
           
           @media (min-width: 768px) {
             table {
-              margin: 1.5rem 0;
               font-size: 1rem;
             }
           }
           
           thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1e3a8a;
             color: white;
           }
           
@@ -341,10 +290,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           remarkPlugins={[[remarkMath, mathOptions], remarkGfm]}
           rehypePlugins={[rehypeKatex]}
           components={{
-            code({ inline, className, children, ...props }: any) {
+            code({ inline, className, children, ...props }: React.HTMLAttributes<HTMLElement> & { inline?: boolean }) {
               const match = /language-(\w+)/.exec(className || '');
               return !inline && match ? (
                 <SyntaxHighlighter
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   style={oneDark as any}
                   language={match[1]}
                   PreTag="div"
@@ -432,22 +382,22 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               );
             },
             p: ({ children }) => (
-              <p className="font-serif mb-3 sm:mb-4 text-black leading-relaxed text-base break-words">
+              <p className="font-serif mb-3 sm:mb-4 text-black leading-relaxed text-base break-words max-w-prose">
                 {children}
               </p>
             ),
             ul: ({ children }) => (
-              <ul className="mb-3 sm:mb-4 ml-4 sm:ml-6 list-disc">
+              <ul className="mb-3 sm:mb-4 ml-4 sm:ml-6 list-disc max-w-prose">
                 {children}
               </ul>
             ),
             ol: ({ children }) => (
-              <ol className="mb-3 sm:mb-4 ml-4 sm:ml-6 list-decimal">
+              <ol className="mb-3 sm:mb-4 ml-4 sm:ml-6 list-decimal max-w-prose">
                 {children}
               </ol>
             ),
             li: ({ children }) => (
-              <li className="font-serif text-black mb-1.5 sm:mb-2 text-base break-words">
+              <li className="font-serif text-black mb-1.5 sm:mb-2 text-base break-words leading-relaxed pl-1">
                 {children}
               </li>
             ),
@@ -458,61 +408,33 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                 </div>
               </div>
             ),
-            blockquote: ({ children }) => {
-              const text = String(children);
-              const lines = text.split('\n').filter(l => l.trim());
-              const firstLine = lines[0] || '';
+            blockquote: ({ node, children, ...props }) => {
+              // Extract the first text element to check for special boxes without using String(children)
+              const firstP = node?.children?.[0];
+              const firstTextNode = firstP?.type === 'element' && firstP.tagName === 'p' ? firstP.children?.[0] : null;
+              const firstText = firstTextNode?.type === 'text' ? firstTextNode.value : '';
               
-              // Check if this is a Definition, Theorem, or Example box
-              if (firstLine.toLowerCase().includes('definition')) {
-                const title = firstLine.replace(/definition:\s*/i, '').trim();
-                const content = lines.slice(1).join('\n');
-                return (
-                  <div className="md-definition-box">
-                    <div className="md-box-title">{title || 'Definition'}</div>
-                    <div style={{ fontFamily: '"Times New Roman", Times, serif' }}>
-                      <ReactMarkdown
-                        remarkPlugins={[[remarkMath, mathOptions], remarkGfm]}
-                        rehypePlugins={[rehypeKatex]}
-                      >
-                        {content}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                );
+              const lowerText = firstText.toLowerCase();
+              let boxType = '';
+              let title = '';
+
+              if (lowerText.startsWith('definition:')) {
+                boxType = 'md-definition-box';
+                title = firstText.replace(/definition:\s*/i, '').trim() || 'Definition';
+              } else if (lowerText.startsWith('theorem:')) {
+                boxType = 'md-theorem-box';
+                title = firstText.replace(/theorem:\s*/i, '').trim() || 'Theorem';
+              } else if (lowerText.startsWith('example')) {
+                boxType = 'md-example-box';
+                title = firstText.replace(/example\s*\d*:?\s*/i, '').trim() || firstText;
               }
-              
-              if (firstLine.toLowerCase().includes('theorem')) {
-                const title = firstLine.replace(/theorem:\s*/i, '').trim();
-                const content = lines.slice(1).join('\n');
+
+              if (boxType) {
                 return (
-                  <div className="md-theorem-box">
-                    <div className="md-box-title">{title || 'Theorem'}</div>
-                    <div style={{ fontFamily: '"Times New Roman", Times, serif' }}>
-                      <ReactMarkdown
-                        remarkPlugins={[[remarkMath, mathOptions], remarkGfm]}
-                        rehypePlugins={[rehypeKatex]}
-                      >
-                        {content}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                );
-              }
-              
-              if (firstLine.toLowerCase().includes('example')) {
-                const title = firstLine.replace(/example\s*\d*:?\s*/i, '').trim();
-                const content = lines.slice(1).join('\n');
-                return (
-                  <div className="md-example-box">
-                    <div className="md-box-title">{title || firstLine}</div>
-                    <div style={{ fontFamily: '"Times New Roman", Times, serif' }}>
-                      <ReactMarkdown
-                        remarkPlugins={[[remarkMath, mathOptions], remarkGfm]}
-                        rehypePlugins={[rehypeKatex]}
-                      >
-                        {content}
-                      </ReactMarkdown>
+                  <div className={boxType}>
+                    <div className="md-box-title">{title}</div>
+                    <div className="md-box-content mt-2 max-w-prose">
+                      {children}
                     </div>
                   </div>
                 );
@@ -520,7 +442,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               
               // Default blockquote styling
               return (
-                <blockquote className="border-l-4 border-gray-400 pl-3 sm:pl-4 italic my-3 sm:my-4 bg-gray-50 py-2 px-3 sm:px-4 rounded-r text-sm sm:text-base">
+                <blockquote className="border-l-4 border-gray-400 pl-3 sm:pl-4 italic my-3 sm:my-4 bg-gray-50 py-2 px-3 sm:px-4 rounded-r text-sm sm:text-base max-w-prose" {...props}>
                   {children}
                 </blockquote>
               );

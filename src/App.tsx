@@ -16,19 +16,24 @@ const Contact = lazy(() => import("./pages/Contact"));
 const Auth = lazy(() => import("./pages/Auth"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
-const TranscendentalFunctions = lazy(() => import("./pages/notes/TranscendentalFunctions"));
-const TrigonometricEquations = lazy(() => import("./pages/notes/TrigonometricEquations"));
-const HyperbolicFunctions = lazy(() => import("./pages/notes/HyperbolicFunctions"));
-const CountingTechniques = lazy(() => import("./pages/notes/CountingTechniques"));
-const PigeonholePrinciple = lazy(() => import("./pages/notes/PigeonholePrinciple"));
-const RecurrenceRelations = lazy(() => import("./pages/notes/RecurrenceRelations"));
-const AngularMeasure = lazy(() => import("./pages/notes/AngularMeasure"));
-const ArcsSectors = lazy(() => import("./pages/notes/ArcsSectors"));
-const TranscendentalFunctionsTutorial = lazy(() => import("./pages/notes/TranscendentalFunctionsTutorial"));
+// Dynamic DB-backed routes
+const NotePage = lazy(() => import("./pages/NotePage"));
+const TutorialPage = lazy(() => import("./pages/TutorialPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const MarkdownLoader = lazy(() => import("./components/MarkdownLoader"));
-import TutorialLoader from "./components/TutorialLoader";
+
 const QuizPage = lazy(() => import("./components/QuizPage"));
+
+// Admin pages
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const NotesManager = lazy(() => import("./pages/admin/NotesManager"));
+const NoteEditor = lazy(() => import("./pages/admin/NoteEditor"));
+const TutorialsManager = lazy(() => import("./pages/admin/TutorialsManager"));
+const TutorialEditor = lazy(() => import("./pages/admin/TutorialEditor"));
+const SubjectsManager = lazy(() => import("./pages/admin/SubjectsManager"));
+const QuizzesManager = lazy(() => import("./pages/admin/QuizzesManager"));
+const CoursesManager = lazy(() => import("./pages/admin/CoursesManager"));
+const MediaManager = lazy(() => import("./pages/admin/MediaManager"));
 
 // Preload critical routes
 const preloadCriticalRoutes = () => {
@@ -58,32 +63,29 @@ const App = () => {
             <Route path="/library" element={<Library />} />
             <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/courses" element={<Courses />} />
+            <Route path="/auth" element={<Auth />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="notes" element={<NotesManager />} />
+              <Route path="notes/:id" element={<NoteEditor />} />
+              <Route path="tutorials" element={<TutorialsManager />} />
+              <Route path="tutorials/:id" element={<TutorialEditor />} />
+              <Route path="subjects" element={<SubjectsManager />} />
+              <Route path="quizzes" element={<QuizzesManager />} />
+              <Route path="courses" element={<CoursesManager />} />
+              <Route path="media" element={<MediaManager />} />
+            </Route>
+            
             <Route path="/jmcplus" element={<JMCPlus />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/auth" element={<Auth />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             
-            {/* Notes Routes */}
-            <Route path="/notes/transcendental-functions" element={<TranscendentalFunctions />} />
-            <Route path="/notes/trigonometric-functions" element={<TrigonometricEquations />} />
-            <Route path="/notes/hyperbolic-functions" element={<HyperbolicFunctions/>} />
-            <Route path="/notes/counting-techniques" element={<CountingTechniques />} />
-            <Route path="/notes/pigeonhole-principle" element={<PigeonholePrinciple />} />
-            <Route path="/notes/recurrence-relations" element={<RecurrenceRelations />} />
-            <Route path="/notes/angular-measure" element={<AngularMeasure />} />
-            <Route path="/notes/arcs-and-sectors" element={<ArcsSectors />}/>
-            
-            {/* Tutorial Routes - Fixed with correct paths */}
-            <Route path="/tutorials/calculus/transcendental-functions-tutorial" element={<TutorialLoader filePath="/content/tutorials/calculus/transcendental-functions-tutorial1.md" title="Transcendental Functions Tutorial" />} />
-            <Route path="/tutorials/calculus/trigonometric-functions-tutorial" element={<TutorialLoader filePath="/content/tutorials/calculus/trigonometric-functions-tutorial.md" title="Trigonometric Functions Tutorial" />} />
-            <Route path="/tutorials/calculus/hyperbolic-functions-tutorial" element={<TutorialLoader filePath="/content/tutorials/calculus/hyperbolic-functions-tutorial.md" title="Hyperbolic Functions Tutorial" />} />
-            <Route path="/tutorials/discrete/counting-techniques-tutorial" element={<TutorialLoader filePath="/content/tutorials/discrete/counting-techniques-tutorial.md" title="Counting Techniques Tutorial" />} />
-            <Route path="/tutorials/discrete/pigeonhole-principle-tutorial" element={<TutorialLoader filePath="/content/tutorials/discrete/pigeonhole-principle-tutorial.md" title="Pigeonhole Principle Tutorial" />} />
-            <Route path="/tutorials/discrete/recurrence-relations-tutorial" element={<TutorialLoader filePath="/content/tutorials/discrete/recurrence-relations-tutorial.md" title="Recurrence Relations Tutorial" />} />
-            <Route path="/tutorials/trigonometry/angular-measure-tutorial" element={<TutorialLoader filePath="/content/tutorials/trigonometry/angular-measure-tutorial.md" title="Angular Measure Tutorial" />} />
-            <Route path="/tutorials/algebra/quadratic-equations-tutorial" element={<TutorialLoader filePath="/content/tutorials/algebra/quadratic-equations-tutorial.md" title="Solving Quadratic Equations - Interactive Tutorial" />} />
-            <Route path="/tutorials/trigonometry/arcs-and-sectors-tutorial" element={<TutorialLoader filePath="/content/tutorials/trigonometry/arcs-and-sectors-tutorial.md" title="Arcs and Sectors Tutorial" />} />
+            {/* Dynamic DB-backed routes (new URL scheme) */}
+            <Route path="/notes/:subject/:slug" element={<NotePage />} />
+            <Route path="/tutorials/:subject/:slug" element={<TutorialPage />} />
 
             {/* Quiz Routes */}
             <Route path="/quiz/:quizId" element={<QuizPage />} />

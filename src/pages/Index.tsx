@@ -76,17 +76,17 @@ const Index = () => {
       <Particles />
       
       {/* Hero Section */}
-      <section className="hero-gradient text-primary-foreground py-20 lg:py-32 relative overflow-hidden">
+      <section className="hero-gradient text-primary-foreground py-20 md:py-24 lg:py-32 relative overflow-hidden">
         <div className="math-bg absolute inset-0" />
         <div className="max-w-5xl mx-auto px-4 text-center relative z-10">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 gradient-text animate-title-glow leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 gradient-text animate-title-glow leading-tight motion-reduce:animate-none">
             Master Mathematics with Expert-Crafted Resources
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 animate-fade-in-up motion-reduce:animate-none" style={{ animationDelay: "0.5s" }}>
             Free online courses, textbooks, and tutorials designed to transform your mathematical journey. 
             From fundamentals to advanced topics — learn at your own pace.
           </p>
-          <div className="flex flex-wrap gap-4 justify-center animate-fade-in-up" style={{ animationDelay: "1s" }}>
+          <div className="flex flex-wrap gap-4 justify-center animate-fade-in-up motion-reduce:animate-none" style={{ animationDelay: "1s" }}>
             <Link to="/library">
               <Button size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 relative overflow-hidden btn-shimmer">
                 <BookOpen className="mr-2 w-5 h-5" />
@@ -110,12 +110,12 @@ const Index = () => {
             Trusted by Learners Worldwide
           </h2>
           <div className="w-16 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-12 rounded-full" />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div 
                 key={stat.label} 
-                className="text-center p-6 hover:-translate-y-2 transition-transform animate-count-up"
-                style={{ animationDelay: `${index * 0.2}s` }}
+                className="text-center p-6 hover:-translate-y-2 focus-visible:-translate-y-2 focus-visible:ring-2 outline-none transition-transform"
+                tabIndex={0}
               >
                 <stat.icon className="w-10 h-10 text-primary mx-auto mb-4" />
                 <span className="block text-4xl md:text-5xl font-extrabold text-primary mb-2">
@@ -143,11 +143,12 @@ const Index = () => {
             {features.map((feature, index) => (
               <div 
                 key={feature.title}
-                className="bg-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-2 border border-primary/10 relative overflow-hidden group"
+                className="bg-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-2 focus-visible:ring-2 focus-visible:-translate-y-2 outline-none border border-primary/10 relative overflow-hidden group"
+                tabIndex={0}
               >
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary" />
-                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:scale-110 transition-all">
-                  <feature.icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-focus-visible:bg-primary group-hover:scale-110 group-focus-visible:scale-110 transition-all will-change-transform">
+                  <feature.icon className="w-8 h-8 text-primary group-hover:text-primary-foreground group-focus-visible:text-primary-foreground transition-colors" />
                 </div>
                 <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
@@ -175,7 +176,8 @@ const Index = () => {
               {learningPath.map((stage, index) => (
                 <div 
                   key={stage.level}
-                  className="bg-card border-2 border-primary/20 rounded-2xl p-6 text-center relative hover:border-primary transition-colors"
+                  className="bg-background border-2 border-primary/20 rounded-2xl p-6 text-center relative hover:border-primary transition-colors focus-visible:ring-2 outline-none"
+                  tabIndex={0}
                 >
                   <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                     {index + 1}
@@ -201,7 +203,8 @@ const Index = () => {
             {testimonials.map((testimonial, index) => (
               <div 
                 key={index}
-                className="bg-primary-foreground/5 backdrop-blur-sm border border-primary-foreground/10 rounded-2xl p-8 hover:-translate-y-2 transition-all"
+                className="bg-primary-foreground/5 dark:bg-muted/50 backdrop-blur-sm border border-primary-foreground/10 rounded-2xl p-8 hover:-translate-y-2 focus-visible:-translate-y-2 focus-visible:ring-2 transition-all outline-none"
+                tabIndex={0}
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -210,7 +213,7 @@ const Index = () => {
                 </div>
                 <p className="text-lg italic mb-6 leading-relaxed">"{testimonial.text}"</p>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xl font-bold">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xl font-bold" aria-hidden="true">
                     {testimonial.author[0]}
                   </div>
                   <div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Layout from './layout/Layout';
 import { Quiz } from './Quiz';
+import { getQuizByTutorialSlug } from '@/services/quizService';
 
 interface QuizData {
   title: string;
@@ -21,11 +22,22 @@ const QuizPage = () => {
 
   useEffect(() => {
     const loadQuiz = async () => {
+      if (!quizId) return;
+
       try {
-        const response = await fetch(`/quizzes/${quizId}-quiz.json`);
-        if (response.ok) {
-          const data = await response.json();
-          setQuizData(data);
+        // 1. Try Supabase first
+        const dbQuiz = await getQuizByTutorialSlug(quizId);
+        if (dbQuiz) {
+          setQuizData({
+            title: dbQuiz.title,
+            description: dbQuiz.description ?? '',
+            questions: dbQuiz.quiz_questions.map((q) => ({
+              question: q.question,
+              options: q.options as string[],
+              correct: q.correct_index,
+              explanation: q.explanation ?? '',
+            })),
+          });
         }
       } catch (error) {
         console.error('Error loading quiz:', error);
@@ -33,9 +45,7 @@ const QuizPage = () => {
       setLoading(false);
     };
 
-    if (quizId) {
-      loadQuiz();
-    }
+    loadQuiz();
   }, [quizId]);
 
   if (loading) {
