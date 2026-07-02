@@ -35,7 +35,9 @@ import {
 
 export function NavGroup({ title, items }: NavGroupProps) {
   const { state, isMobile } = useSidebar()
-  const href = useLocation({ select: (location) => location.href })
+  const location = useLocation()
+  const href = location.pathname // Use pathname instead of href
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
@@ -173,13 +175,29 @@ function SidebarMenuCollapsedDropdown({
   )
 }
 
+// Fixed checkIsActive function with proper type checking
 function checkIsActive(href: string, item: NavItem, mainNav = false) {
+  // Ensure href is a string
+  const safeHref = typeof href === 'string' ? href : ''
+  
+  // Ensure item.url is a string
+  const itemUrl = typeof item.url === 'string' ? item.url : ''
+  
+  // Check if item has items array
+  const hasActiveChild = item?.items?.some((i) => i.url === safeHref) || false
+  
+  // Return true if:
+  // 1. Current href matches item.url
+  // 2. Current href without query params matches item.url
+  // 3. Any child item's url matches current href
+  // 4. For mainNav: first segment of href matches first segment of item.url
+  
   return (
-    href === item.url || // /endpint?search=param
-    href.split('?')[0] === item.url || // endpoint
-    !!item?.items?.filter((i) => i.url === href).length || // if child nav is active
+    safeHref === itemUrl ||
+    safeHref.split('?')[0] === itemUrl ||
+    hasActiveChild ||
     (mainNav &&
-      href.split('/')[1] !== '' &&
-      href.split('/')[1] === item?.url?.split('/')[1])
+      safeHref.split('/')[1] !== '' &&
+      safeHref.split('/')[1] === itemUrl.split('/')[1])
   )
 }

@@ -12,6 +12,8 @@ import { Header } from './header'
 import { Search } from '@/components/search'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { useAuth } from '@/contexts/AuthContext'
+import { Loader2 } from 'lucide-react'
 
 interface DashboardLayoutProps {
   data: SidebarData
@@ -20,6 +22,19 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ data, children }: DashboardLayoutProps) {
   const defaultOpen = getCookie('sidebar_state') !== 'false'
+  const { loading, user } = useAuth()
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  // If not authenticated, you might want to redirect
+  // But don't redirect here - let the route protection handle it
   
   return (
     <SearchProvider>
