@@ -1,29 +1,27 @@
+import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { BookOpen, Clock, Layers } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
+import CourseCard from "@/components/courses/CourseCard";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { getPublishedCourses } from "@/services/courseService";
 import { NoteCardSkeleton } from "@/components/ui/Skeletons";
 import { cn } from "@/lib/utils";
 
-const getLevelStyle = (level: string | null) => {
-  switch (level) {
-    case "Beginner":
-      return { pill: "bg-beginner-green text-white", label: "Beginner" };
-    case "Intermediate":
-      return { pill: "bg-intermediate-yellow text-white", label: "Intermediate" };
-    case "Advanced":
-      return { pill: "bg-advanced-red text-white", label: "Advanced" };
-    default:
-      return { pill: "bg-primary-fixed text-on-primary-fixed", label: level || "Course" };
-  }
-};
+const LEVELS = ["Beginner", "Intermediate", "Advanced"] as const;
 
 const Courses = () => {
+  const [activeLevel, setActiveLevel] = useState<string>("all");
+  const [sort, setSort] = useState<"newest" | "az">("newest");
+
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ["courses"],
     queryFn: getPublishedCourses,
   });
+
+  const filtered = courses
+    .filter((c) => activeLevel === "all" || c.level === activeLevel)
+    .sort((a, b) => (sort === "az" ? a.title.localeCompare(b.title) : 0));
 
   return (
     <Layout>
@@ -34,105 +32,90 @@ const Courses = () => {
         <link rel="canonical" href="https://jmcacademics.netlify.app/courses" />
       </Helmet>
 
-      <main className="flex flex-col min-h-screen">
-        {/* Header Section */}
-        <header className="w-full bg-surface-container py-16 relative overflow-hidden">
-          {/* Floating Particle Effect */}
-          <div className="absolute inset-0 pointer-events-none opacity-20">
-            <div className="absolute top-10 left-10 w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-            <div className="absolute top-40 right-20 w-3 h-3 bg-secondary rounded-full animate-ping"></div>
-            <div className="absolute bottom-10 left-1/3 w-2 h-2 bg-primary-container rounded-full"></div>
-          </div>
-          <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
-            <h1 className="font-headline-h1 text-headline-h1 text-on-background mb-4">Advance Your Mathematical Journey</h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-              Rigorous coursework designed for clarity and depth. From foundational calculus to abstract analysis, master the language of the universe.
-            </p>
-          </div>
-        </header>
+      <main className="min-h-screen bg-[#F5F6FA]">
+        <PageHeader
+          index="003"
+          eyebrow="Courses"
+          title={
+            <>
+              Structured paths,<br />start to mastery.
+            </>
+          }
+          description="Full courses built from JMC's notes and tutorials — sequenced so each topic builds on the last."
+        />
 
-        {/* Main Content */}
-        <main className="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
-          {/* Sort Row */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-gutter mb-stack-md">
-            <div className="flex flex-wrap gap-stack-sm">
-              <button className="px-5 py-2 rounded-full bg-primary text-on-primary font-body-sm font-semibold">All Subjects</button>
-              <button className="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-outline-variant transition-colors font-body-sm">Calculus</button>
-              <button className="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-outline-variant transition-colors font-body-sm">Linear Algebra</button>
-              <button className="px-5 py-2 rounded-full bg-surface-container-high text-on-surface-variant hover:bg-outline-variant transition-colors font-body-sm">Analysis</button>
-            </div>
-            <div className="flex items-center gap-2 text-on-surface-variant">
-              <span className="font-body-sm">Sort by:</span>
-              <select className="bg-transparent border-none font-bold focus:ring-0 cursor-pointer text-on-surface">
-                <option>Most Popular</option>
-                <option>Difficulty: Low to High</option>
-                <option>Difficulty: High to Low</option>
-                <option>Newest</option>
-              </select>
+        {/* Filter row */}
+        <div className="sticky top-16 z-10 bg-[#F5F6FA]/95 backdrop-blur-sm border-b border-[#0A0A0F]/12">
+          <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+                <button
+                  onClick={() => setActiveLevel("all")}
+                  className={cn(
+                    "shrink-0 font-code text-[11px] font-bold uppercase tracking-wider px-4 py-4 border-b-2 transition-colors whitespace-nowrap",
+                    activeLevel === "all"
+                      ? "border-[#4338FF] text-[#0A0A0F]"
+                      : "border-transparent text-[#0A0A0F]/40 hover:text-[#0A0A0F]"
+                  )}
+                >
+                  All
+                </button>
+                {LEVELS.map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setActiveLevel(level)}
+                    className={cn(
+                      "shrink-0 font-code text-[11px] font-bold uppercase tracking-wider px-4 py-4 border-b-2 transition-colors whitespace-nowrap",
+                      activeLevel === level
+                        ? "border-[#4338FF] text-[#0A0A0F]"
+                        : "border-transparent text-[#0A0A0F]/40 hover:text-[#0A0A0F]"
+                    )}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 shrink-0 py-2">
+                <span className="font-code text-[10px] uppercase tracking-wider text-[#0A0A0F]/40">Sort</span>
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as "newest" | "az")}
+                  className="bg-transparent border-none font-code text-[11px] font-bold uppercase tracking-wider text-[#0A0A0F] focus:outline-none focus:ring-0 cursor-pointer"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="az">A–Z</option>
+                </select>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Course Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {isLoading ? (
-              Array.from({ length: 6 }).map((_, i) => <NoteCardSkeleton key={i} />)
-            ) : courses.length === 0 ? (
-              <p className="col-span-full text-center text-on-surface-variant py-12 font-body-md text-body-md">
-                No courses are currently available. Check back soon!
-              </p>
-            ) : (
-              courses.map((course) => {
-                const { pill, label } = getLevelStyle(course.level);
-                return (
-                  <div key={course.id} className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-                    <div className="h-48 relative group overflow-hidden">
-                      {course.cover_image ? (
-                        <img
-                          src={course.cover_image}
-                          alt={course.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-surface-container-high">
-                          <BookOpen className="w-12 h-12 text-outline/40" />
-                        </div>
-                      )}
-                      {course.level && (
-                        <div className={cn("absolute top-4 right-4 px-3 py-1 rounded-full font-label-caps text-label-caps shadow-sm", pill)}>
-                          {label}
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all"></div>
-                    </div>
-                    <div className="p-6 flex flex-col flex-grow">
-                      <h3 className="font-headline-h3 text-headline-h3 text-primary mb-2">{course.title}</h3>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant mb-6 line-clamp-2">{course.description}</p>
-                      <div className="mt-auto flex items-center text-on-surface-variant gap-4">
-                        {course.duration_weeks && (
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            <span className="text-body-sm">{course.duration_weeks} Weeks</span>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1">
-                          <Layers className="w-4 h-4" />
-                          <span className="text-body-sm">Course</span>
-                        </div>
-                      </div>
-                      <button
-                        className="w-full mt-6 bg-primary text-on-primary py-3 rounded-lg font-bold hover:opacity-90 transition-colors active:scale-95 duration-200"
-                        onClick={() => alert("Enrollment feature coming soon!")}
-                      >
-                        Enroll Now
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </main>
+        {/* Course grid */}
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-14">
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <NoteCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-24 border-2 border-dashed border-[#0A0A0F]/15">
+              <p className="font-inter text-xl font-bold text-[#0A0A0F] mb-1">No courses yet.</p>
+              <p className="font-code text-[12px] text-[#0A0A0F]/50">Check back soon, or try a different level.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map((course, i) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  position={i + 1}
+                  onEnroll={() => alert("Enrollment feature coming soon!")}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </Layout>
   );

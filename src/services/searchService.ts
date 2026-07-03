@@ -468,32 +468,32 @@ export async function searchContentDB(query: string): Promise<SearchResult[]> {
     const results: SearchResult[] = [];
 
     (notesRes.data ?? []).forEach((row: {
-      id: string; slug: string; title: string; subject_id: string; rank: number
+      id: string; slug: string; title: string; subject_slug: string; subject_id: string; rank: number
     }) => {
       results.push({
         id: row.id,
         title: row.title,
         description: '',
         type: 'note',
-        path: `/notes/${row.slug}`,
+        path: `/notes/${row.subject_slug}/${row.slug}`,
         category: 'Study Notes',
         author: 'Josophat Makawa',
-        tags: ['note'],
+        tags: ['note', row.subject_slug],
       });
     });
 
     (tutorialsRes.data ?? []).forEach((row: {
-      id: string; slug: string; title: string; subject_id: string; rank: number
+      id: string; slug: string; title: string; subject_slug: string; subject_id: string; rank: number
     }) => {
       results.push({
         id: row.id,
         title: row.title,
         description: '',
         type: 'tutorial',
-        path: `/tutorials/${row.slug}`,
+        path: `/tutorials/${row.subject_slug}/${row.slug}`,
         category: 'Tutorials',
         author: 'Josophat Makawa',
-        tags: ['tutorial'],
+        tags: ['tutorial', row.subject_slug],
       });
     });
 
@@ -501,4 +501,48 @@ export async function searchContentDB(query: string): Promise<SearchResult[]> {
   } catch {
     return [];
   }
+}
+
+// ——————————————————————————————————————————————————
+// searchMixed: DB-backed content + hardcoded site pages.
+// This is what Navbar uses — replaces the broken searchContent().
+// ——————————————————————————————————————————————————
+export async function searchMixed(query: string): Promise<SearchResult[]> {
+  if (!query.trim()) return [];
+
+  const normalizedQuery = query.toLowerCase().trim();
+  const queryWords = normalizedQuery.split(/\s+/);
+
+  // Score a page result against the query (title + tags matching)
+  const scorePageResult = (item: SearchResult): number => {
+    let score = 0;
+    const titleLower = item.title.toLowerCase();
+    if (titleLower === normalizedQuery) score += 100;
+    else if (titleLower.includes(normalizedQuery)) score += 50;
+    else queryWords.forEach(word => { if (titleLower.includes(word)) score += 20; });
+    const descLower = item.description.toLowerCase();
+    if (descLower.includes(normalizedQuery)) score += 30;
+    else queryWords.forEach(word => { if (descLower.includes(word)) score += 10; });
+    (item.tags ?? []).forEach(tag => {
+      const t = tag.toLowerCase();
+      if (t === normalizedQuery) score += 40;
+      else if (t.includes(normalizedQuery)) score += 20;
+      else queryWords.forEach(word => { if (t.includes(word)) score += 8; });
+    });
+    return score;
+  };
+
+  // Run DB search and static page scoring in parallel
+  const [dbResults, pageResults] = await Promise.all([
+    searchContentDB(query),
+    Promise.resolve(
+      pages
+        .map(p => ({ ...p, score: scorePageResult(p) }))
+        .filter(p => p.score > 0)
+        .sort((a, b) => b.score - a.score)
+    ),
+  ]);
+
+  // Interleave: DB content first (Postgres ranking), then matching pages
+  return [...dbResults, ...pageResults].slice(0, 15);
 }

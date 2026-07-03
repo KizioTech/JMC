@@ -7,7 +7,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { cn } from "@/lib/utils";
-import { searchContent, getTypeLabel, getTypeColor, type SearchResult } from "@/services/searchService";
+import { searchMixed, getTypeLabel, getTypeColor, type SearchResult } from "@/services/searchService";
 import { ThemeSelector } from "@/components/ThemeSelector";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -49,7 +49,7 @@ const Navbar = () => {
   useEffect(() => {
     const performSearch = async () => {
       if (searchQuery.trim()) {
-        const results = await searchContent(searchQuery);
+        const results = await searchMixed(searchQuery);
         setSearchResults(results);
         setShowSearchResults(true);
       } else {

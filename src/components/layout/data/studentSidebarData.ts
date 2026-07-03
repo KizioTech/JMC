@@ -1,11 +1,6 @@
 import {
   LayoutDashboard,
-  BookOpen,
-  Layers,
-  Receipt,
-  HelpCircle,
-  Settings,
-  FolderOpen
+  FolderOpen,
 } from 'lucide-react';
 import { type SidebarData } from '../types';
 
@@ -27,25 +22,9 @@ export const studentSidebarData = (user: { user_metadata?: { full_name?: string 
       title: 'Overview',
       items: [
         { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-        { title: 'My Courses', url: '/dashboard/courses', icon: BookOpen },
         { title: 'Library', url: '/library', icon: FolderOpen },
-      ],
-    },
-    {
-      title: 'Billing',
-      items: [
-        { title: 'Plans', url: '/dashboard/plans', icon: Layers },
-        { title: 'Transactions', url: '/dashboard/transactions', icon: Receipt },
-        { title: 'My Cards', url: '/dashboard/billing/cards' },
-        { title: 'Invoices', url: '/dashboard/billing/invoices' },
-      ],
-    },
-    {
-      title: 'Support',
-      items: [
-        { title: 'Help', url: '/dashboard/help', icon: HelpCircle },
-        { title: 'Settings', url: '/dashboard/settings', icon: Settings },
       ],
     },
   ],
 });
+

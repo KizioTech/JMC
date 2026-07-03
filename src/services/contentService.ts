@@ -68,7 +68,7 @@ export async function getAllSubjects(): Promise<SubjectRow[]> {
 export async function getAllNotes(): Promise<NoteRow[]> {
   const { data, error } = await supabase
     .from('notes')
-    .select('id, subject_id, slug, title, sort_order, published, updated_at, subjects(slug, name)')
+    .select('id, subject_id, slug, title, sort_order, published, updated_at, difficulty, cover_image, subjects(slug, name)')
     .eq('published', true)
     .order('sort_order');
   if (error) throw error;

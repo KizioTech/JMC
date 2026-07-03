@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { 
   Heading2, Heading3, Bold, List, ListOrdered, Quote, Table2, 
-  Sigma, ChevronDown, ChevronUp, Eye, PenLine, Link as LinkIcon, Image as ImageIcon, Video
+  Sigma, ChevronDown, ChevronUp, Eye, PenLine, Link as LinkIcon, Image as ImageIcon, Video, Upload, Loader2
 } from "lucide-react";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/lib/supabaseClient";
 
 interface MathRichTextEditorProps {
   value: string;
@@ -39,9 +40,107 @@ export default function MathRichTextEditor({
 }: MathRichTextEditorProps) {
   const isMobile = useIsMobile();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  // Guards against the editor/preview sync handlers re-triggering each other
+  const isSyncingScroll = useRef(false);
   
   // UI Tabs
   const [tab, setTab] = useState<"write" | "preview">("write");
+
+  // ————————————————————————————————————————————————————————
+  // Cursor-following editor ↔ preview sync (TeXstudio / VS Code style).
+  // MarkdownRenderer stamps every block element with data-line={sourceLine},
+  // so instead of matching raw scroll percentage (which drifts badly once
+  // the two panes render at different densities — one line of LaTeX can
+  // become a tall block), we match by *line number*, the same anchor a
+  // real synctex-style split editor uses.
+  // ————————————————————————————————————————————————————————
+
+  const getLineHeightPx = (el: HTMLTextAreaElement) => {
+    const lh = parseFloat(window.getComputedStyle(el).lineHeight);
+    return Number.isFinite(lh) && lh > 0 ? lh : 24;
+  };
+
+  const getCursorLine = () => {
+    const el = textareaRef.current;
+    if (!el) return 1;
+    return el.value.slice(0, el.selectionStart).split('\n').length; // 1-indexed
+  };
+
+  // Scroll the preview so the block matching `line` sits at the top of view.
+  const scrollPreviewToLine = (line: number) => {
+    const preview = previewRef.current;
+    if (!preview) return;
+    const marked = Array.from(preview.querySelectorAll<HTMLElement>('[data-line]'));
+    if (marked.length === 0) return;
+
+    // Last marked block whose source line is at or before the cursor's line —
+    // i.e. "what block is the cursor currently inside/after".
+    let target: HTMLElement | null = null;
+    for (const el of marked) {
+      const elLine = Number(el.dataset.line);
+      if (!Number.isFinite(elLine) || elLine > line) break;
+      target = el;
+    }
+    if (!target) target = marked[0];
+
+    const previewRect = preview.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const offset = targetRect.top - previewRect.top + preview.scrollTop;
+
+    isSyncingScroll.current = true;
+    preview.scrollTo({ top: Math.max(offset - 12, 0), behavior: 'smooth' });
+    window.setTimeout(() => { isSyncingScroll.current = false; }, 300);
+  };
+
+  // Scroll the editor so `line` sits at the top of view (used when the
+  // preview is scrolled directly, e.g. with the mouse wheel over it).
+  const scrollEditorToLine = (line: number) => {
+    const editor = textareaRef.current;
+    if (!editor) return;
+    isSyncingScroll.current = true;
+    editor.scrollTo({ top: Math.max((line - 1) * getLineHeightPx(editor) - 12, 0), behavior: 'smooth' });
+    window.setTimeout(() => { isSyncingScroll.current = false; }, 300);
+  };
+
+  // Fires on click / arrow keys / typing — i.e. whenever the cursor actually moves.
+  const handleCursorActivity = () => {
+    if (isSyncingScroll.current) return;
+    scrollPreviewToLine(getCursorLine());
+  };
+
+  // Fires on raw wheel/track-pad scroll of the editor (cursor unchanged) — follow
+  // whatever line is now at the top of the visible editor viewport instead.
+  const handleEditorScroll = () => {
+    const editor = textareaRef.current;
+    if (!editor || isSyncingScroll.current) return;
+    const topLine = Math.floor(editor.scrollTop / getLineHeightPx(editor)) + 1;
+    scrollPreviewToLine(topLine);
+  };
+
+  // Fires when the preview itself is scrolled directly — walk back to the
+  // nearest marked block and pull the editor to that line.
+  const handlePreviewScroll = () => {
+    const preview = previewRef.current;
+    if (!preview || isSyncingScroll.current) return;
+    const marked = Array.from(preview.querySelectorAll<HTMLElement>('[data-line]'));
+    if (marked.length === 0) return;
+    const previewRect = preview.getBoundingClientRect();
+
+    // First block whose top is at/below the preview's own top — i.e. the
+    // block currently at the top edge of the visible preview.
+    let topBlock: HTMLElement | null = null;
+    for (const el of marked) {
+      if (el.getBoundingClientRect().top >= previewRect.top - 4) {
+        topBlock = el;
+        break;
+      }
+    }
+    if (!topBlock) topBlock = marked[marked.length - 1];
+
+    const line = Number(topBlock.dataset.line);
+    if (Number.isFinite(line)) scrollEditorToLine(line);
+  };
 
   // Toolbar state
   const [mathOpen, setMathOpen] = useState(false);
@@ -61,6 +160,8 @@ export default function MathRichTextEditor({
   const [imageOpen, setImageOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [imageAlt, setImageAlt] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const [videoOpen, setVideoOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
@@ -132,6 +233,27 @@ export default function MathRichTextEditor({
   const insertImage = () => { insertSyntax(`![${imageAlt}](${imageUrl})`); setImageOpen(false); setImageUrl(''); setImageAlt(''); };
   const insertVideo = () => { insertSyntax(`\n\n<!-- video: ${videoUrl} -->\n\n`); setVideoOpen(false); setVideoUrl(''); };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setIsUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const { error } = await supabase.storage.from('media').upload(fileName, file);
+      if (error) throw error;
+      
+      const { data } = supabase.storage.from('media').getPublicUrl(fileName);
+      setImageUrl(data.publicUrl);
+      if (!imageAlt) setImageAlt(file.name.replace(`.${fileExt}`, ''));
+    } catch (err: any) {
+      alert(err.message || 'Image upload failed');
+    } finally {
+      setIsUploadingImage(false);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
+  };
+
   const mainButtons: ToolbarBtn[] = [
     { icon: Heading2, label: "Heading 2", tooltip: "Large section heading", action: () => insertSyntax("## ") },
     { icon: Heading3, label: "Heading 3", tooltip: "Medium sub-heading", action: () => insertSyntax("### ") },
@@ -162,8 +284,14 @@ export default function MathRichTextEditor({
     </button>
   );
 
+  // `minHeight` doubles as: (a) a fixed-height class like "h-full" when the parent
+  // already gives us a bounded box (this is how NoteEditorPage/TutorialEditorPage
+  // use it — the editor should fill and internally scroll, never grow the page),
+  // or (b) a floor like "min-h-[500px]" for standalone use with no bounded parent.
+  const isFillMode = minHeight.includes('h-full') || minHeight.includes('h-screen');
+
   return (
-    <div className={`flex flex-col w-full ${className}`}>
+    <div className={`flex flex-col w-full ${isFillMode ? 'h-full min-h-0' : minHeight} ${className}`}>
       
       {/* Editor Top Bar for Mobile Preview Toggle */}
       {(withPreview && isMobile) && (
@@ -186,11 +314,15 @@ export default function MathRichTextEditor({
       )}
 
       {/* Main Content Area */}
-      <div className={(!isMobile && withPreview) ? "grid grid-cols-2 gap-0 border border-border/60 rounded-xl overflow-hidden shadow-sm" : ""}>
+      <div className={
+        (!isMobile && withPreview)
+          ? `grid grid-cols-2 gap-0 border border-border/60 rounded-xl shadow-sm overflow-hidden ${isFillMode ? 'flex-1 min-h-0' : minHeight}`
+          : (isFillMode ? 'flex-1 min-h-0 flex flex-col' : '')
+      }>
         
         {/* Editor Side */}
         {(!withPreview || !isMobile || tab === "write") && (
-          <div className={(!isMobile && withPreview) ? "bg-muted/30 border-r border-border/60 flex flex-col" : "rounded-xl border border-border/60 bg-muted/30 overflow-hidden focus-within:border-primary transition-colors flex flex-col"}>
+          <div className={(!isMobile && withPreview) ? "bg-muted/30 border-r border-border/60 flex flex-col min-h-0 h-full" : "rounded-xl border border-border/60 bg-muted/30 overflow-hidden focus-within:border-primary transition-colors flex flex-col min-h-0 h-full flex-1"}>
             
             {/* Toolbar */}
             <div className="flex flex-wrap items-center gap-0.5 p-1 border-b border-border/40 shrink-0">
@@ -235,9 +367,12 @@ export default function MathRichTextEditor({
             <Textarea 
               ref={textareaRef}
               placeholder={placeholder}
-              className={`${minHeight} border-none focus-visible:ring-0 text-md p-6 bg-transparent rounded-none resize-none font-mono leading-relaxed flex-1`}
+              onScroll={handleEditorScroll}
+              onKeyUp={handleCursorActivity}
+              onClick={handleCursorActivity}
+              className="flex-1 min-h-0 overflow-y-auto border-none focus-visible:ring-0 text-md p-6 bg-transparent rounded-none resize-none font-mono leading-relaxed"
               value={value}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={(e) => { onChange(e.target.value); handleCursorActivity(); }}
             />
           </div>
         )}
@@ -247,18 +382,20 @@ export default function MathRichTextEditor({
           <>
             {/* Mobile Preview Pane */}
             {(isMobile && tab === "preview") && (
-              <div className={`${minHeight} rounded-xl border bg-card p-6 overflow-auto`}>
+              <div className={`${isFillMode ? 'flex-1 min-h-0' : minHeight} rounded-xl border bg-card p-6 overflow-y-auto`}>
                 <MarkdownRenderer content={value} />
               </div>
             )}
 
             {/* Desktop Dual Pane */}
             {(!isMobile && withPreview) && (
-              <div className={`${minHeight} bg-card p-6 overflow-auto`}>
-                <div className="text-[10px] font-bold text-muted-foreground/60 mb-3 uppercase tracking-widest flex items-center gap-1.5 border-b pb-2">
+              <div className="flex flex-col min-h-0 h-full bg-card">
+                <div className="text-[10px] font-bold text-muted-foreground/60 px-6 pt-6 pb-3 uppercase tracking-widest flex items-center gap-1.5 border-b shrink-0">
                   <Eye className="h-3 w-3" /> Live Preview
                 </div>
-                <MarkdownRenderer content={value} />
+                <div ref={previewRef} onScroll={handlePreviewScroll} className="flex-1 min-h-0 overflow-y-auto p-6">
+                  <MarkdownRenderer content={value} />
+                </div>
               </div>
             )}
           </>
@@ -352,6 +489,33 @@ export default function MathRichTextEditor({
         <DialogContent className="sm:max-w-md">
           <DialogHeader><DialogTitle>Insert Image</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Upload Image</Label>
+              <div className="flex items-center gap-2">
+                <input 
+                  type="file" 
+                  ref={imageInputRef} 
+                  onChange={handleImageUpload} 
+                  accept="image/*" 
+                  className="hidden" 
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={isUploadingImage}
+                  className="w-full gap-2"
+                >
+                  {isUploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  {isUploadingImage ? 'Uploading...' : 'Choose File'}
+                </Button>
+              </div>
+            </div>
+            <div className="relative flex items-center py-2">
+              <div className="flex-grow border-t border-border"></div>
+              <span className="flex-shrink-0 mx-4 text-muted-foreground text-xs uppercase tracking-wider">or provide URL</span>
+              <div className="flex-grow border-t border-border"></div>
+            </div>
             <div className="space-y-2">
               <Label>Image URL</Label>
               <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." />

@@ -197,18 +197,21 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           remarkPlugins={[[remarkMath, mathOptions], remarkGfm]}
           rehypePlugins={[rehypeKatex, rehypeRaw]}
           components={{
-            code({ inline, className, children, ...props }: React.HTMLAttributes<HTMLElement> & { inline?: boolean }) {
+            code({ inline, className, children, node, ...props }: React.HTMLAttributes<HTMLElement> & { inline?: boolean; node?: { position?: { start?: { line?: number } } } }) {
               const match = /language-(\w+)/.exec(className || '');
+              const dataLine = node?.position?.start?.line;
               return !inline && match ? (
-                <SyntaxHighlighter
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  style={oneDark as any}
-                  language={match[1]}
-                  PreTag="div"
-                  className="rounded-lg text-sm sm:text-base my-5 shadow-sm"
-                >
-                  {String(children).replace(/\n$/, '')}
-                </SyntaxHighlighter>
+                <div data-line={dataLine}>
+                  <SyntaxHighlighter
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    style={oneDark as any}
+                    language={match[1]}
+                    PreTag="div"
+                    className="rounded-lg text-sm sm:text-base my-5 shadow-sm"
+                  >
+                    {String(children).replace(/\n$/, '')}
+                  </SyntaxHighlighter>
+                </div>
               ) : (
                 <code className="bg-blue-50 px-1.5 py-0.5 rounded text-[0.85em] font-mono text-blue-800" {...props}>
                   {children}
@@ -218,11 +221,12 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
             // MarkdownRenderer.tsx (updated components section)
 // Replace the h1-h6 components with these:
 
-h1: ({ children }) => {
+h1: ({ children, node }) => {
   const id = slugify(String(children));
   return (
     <h1 
       id={id} 
+      data-line={node?.position?.start?.line}
       className={`${SCROLL_MARGIN} font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 pb-4 border-b-2 border-blue-900/20 cursor-pointer hover:text-blue-800 transition-colors group`}
     >
       <span className="relative">
@@ -232,11 +236,12 @@ h1: ({ children }) => {
     </h1>
   );
 },
-h2: ({ children }) => {
+h2: ({ children, node }) => {
   const id = slugify(String(children));
   return (
     <h2 
       id={id} 
+      data-line={node?.position?.start?.line}
       className={`${SCROLL_MARGIN} font-serif text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 mt-10 mb-4 flex items-center gap-3 cursor-pointer hover:text-blue-800 transition-colors group`}
     >
       <span className="inline-block w-6 h-px bg-blue-900/30 group-hover:bg-blue-600 transition-colors" aria-hidden="true" />
@@ -247,11 +252,12 @@ h2: ({ children }) => {
     </h2>
   );
 },
-h3: ({ children }) => {
+h3: ({ children, node }) => {
   const id = slugify(String(children));
   return (
     <h3 
       id={id} 
+      data-line={node?.position?.start?.line}
       className={`${SCROLL_MARGIN} font-serif text-lg sm:text-xl md:text-2xl font-semibold text-slate-800 mt-8 mb-3 cursor-pointer hover:text-blue-800 transition-colors group`}
     >
       <span className="relative">
@@ -261,11 +267,12 @@ h3: ({ children }) => {
     </h3>
   );
 },
-h4: ({ children }) => {
+h4: ({ children, node }) => {
   const id = slugify(String(children));
   return (
     <h4 
       id={id} 
+      data-line={node?.position?.start?.line}
       className={`${SCROLL_MARGIN} text-base sm:text-lg font-semibold text-slate-700 mt-6 mb-2 cursor-pointer hover:text-blue-800 transition-colors group`}
     >
       <span className="relative">
@@ -275,34 +282,34 @@ h4: ({ children }) => {
     </h4>
   );
 },
-            h5: ({ children }) => {
+            h5: ({ children, node }) => {
               const id = slugify(String(children));
               return (
-                <h5 id={id} className={`${SCROLL_MARGIN} text-sm sm:text-base font-semibold text-slate-600 mt-4 mb-2`}>
+                <h5 id={id} data-line={node?.position?.start?.line} className={`${SCROLL_MARGIN} text-sm sm:text-base font-semibold text-slate-600 mt-4 mb-2`}>
                   {children}
                 </h5>
               );
             },
-            h6: ({ children }) => {
+            h6: ({ children, node }) => {
               const id = slugify(String(children));
               return (
-                <h6 id={id} className={`${SCROLL_MARGIN} text-xs sm:text-sm font-semibold text-slate-500 mt-3 mb-2`}>
+                <h6 id={id} data-line={node?.position?.start?.line} className={`${SCROLL_MARGIN} text-xs sm:text-sm font-semibold text-slate-500 mt-3 mb-2`}>
                   {children}
                 </h6>
               );
             },
-            p: ({ children }) => (
-              <p className="mb-4 text-slate-800 leading-relaxed break-words max-w-prose">
+            p: ({ children, node }) => (
+              <p data-line={node?.position?.start?.line} className="mb-4 text-slate-800 leading-relaxed break-words max-w-prose">
                 {children}
               </p>
             ),
-            ul: ({ children }) => (
-              <ul className="mb-4 ml-5 space-y-1.5 list-disc marker:text-blue-900 max-w-prose">
+            ul: ({ children, node }) => (
+              <ul data-line={node?.position?.start?.line} className="mb-4 ml-5 space-y-1.5 list-disc marker:text-blue-900 max-w-prose">
                 {children}
               </ul>
             ),
-            ol: ({ children }) => (
-              <ol className="mb-4 ml-5 space-y-1.5 list-decimal marker:text-blue-900 marker:font-semibold max-w-prose">
+            ol: ({ children, node }) => (
+              <ol data-line={node?.position?.start?.line} className="mb-4 ml-5 space-y-1.5 list-decimal marker:text-blue-900 marker:font-semibold max-w-prose">
                 {children}
               </ol>
             ),
@@ -311,8 +318,8 @@ h4: ({ children }) => {
                 {children}
               </li>
             ),
-            table: ({ children }) => (
-              <div className="overflow-x-auto my-6 -mx-2 sm:mx-0">
+            table: ({ children, node }) => (
+              <div data-line={node?.position?.start?.line} className="overflow-x-auto my-6 -mx-2 sm:mx-0">
                 <div className="inline-block min-w-full align-middle px-2 sm:px-0">
                   <table className="min-w-full">{children}</table>
                 </div>
@@ -345,7 +352,7 @@ h4: ({ children }) => {
 
               if (boxType) {
                 return (
-                  <div className={`md-callout ${boxType}`}>
+                  <div data-line={node?.position?.start?.line} className={`md-callout ${boxType}`}>
                     <span className="md-callout-tag">{tag}</span>
                     <div className="md-box-title">{title}</div>
                     <div className="md-box-content max-w-prose">
@@ -356,7 +363,7 @@ h4: ({ children }) => {
               }
 
               return (
-                <blockquote className="border-l-4 border-slate-300 pl-4 italic my-4 bg-slate-50 py-2.5 px-4 rounded-r-lg text-slate-700 max-w-prose" {...props}>
+                <blockquote data-line={node?.position?.start?.line} className="border-l-4 border-slate-300 pl-4 italic my-4 bg-slate-50 py-2.5 px-4 rounded-r-lg text-slate-700 max-w-prose" {...props}>
                   {children}
                 </blockquote>
               );
@@ -376,8 +383,8 @@ h4: ({ children }) => {
                 {children}
               </strong>
             ),
-            img: ({ src, alt }) => (
-              <img src={src} alt={alt || ''} loading="lazy" />
+            img: ({ src, alt, node }) => (
+              <img data-line={node?.position?.start?.line} src={src} alt={alt || ''} loading="lazy" />
             ),
           }}
         >

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabaseClient';
 import ContentEditor from '@/components/admin/ContentEditor';
@@ -9,13 +9,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { ArrowLeft, Save, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const AUTOSAVE_INTERVAL_MS = 30_000; // 30 seconds
 
 export default function NoteEditorPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
+  const { session, role, loading: authLoading } = useAuth();
 
   // Only fetch once on mount — never re-fetches, so DB data never stomps on local state
   const { data: note, isLoading } = useQuery({
@@ -100,6 +103,11 @@ export default function NoteEditorPage() {
     },
   });
 
+  // Auth guard — mirrors AdminLayout (must be below all hooks)
+  if (authLoading) return <div className="min-h-screen pt-20"><ContentSkeleton /></div>;
+  if (!session) return <Navigate to="/auth" state={{ from: location }} replace />;
+  if (role !== 'admin') return <Navigate to="/" replace />;
+
   if (isLoading) return <div className="p-6"><ContentSkeleton /></div>;
 
   return (
@@ -129,7 +137,11 @@ export default function NoteEditorPage() {
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <Switch checked={published} onCheckedChange={async (v) => {
               setPublished(v);
-              if (!v) {
+              if (v) {
+                // Turn ON: publish draft → live (same as the Publish button)
+                publishMutation.mutate();
+              } else {
+                // Turn OFF: unpublish without touching content
                 await supabase.from('notes').update({ published: false }).eq('id', id!);
               }
             }} /> Published

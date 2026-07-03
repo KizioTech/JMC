@@ -1,17 +1,13 @@
 import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
+import PageHeader from "@/components/PageHeader";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Send,
-  MessageSquare,
-  Clock
-} from "lucide-react";
+import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+
+const fieldClass =
+  "rounded-none border-2 border-[#0A0A0F]/15 bg-white font-code text-[13px] text-[#0A0A0F] placeholder:text-[#0A0A0F]/35 focus-visible:border-[#4338FF] focus-visible:ring-0 focus-visible:ring-offset-0";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -30,131 +26,151 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: Mail,
-      title: "Email Us",
-      details: "contact@jmcacademics.com",
-      description: "We'll respond within 24 hours",
+      code: "MAIL",
+      title: "Email us",
+      details: "info.jmcacademics@gmail.com",
+      description: "We'll respond within 24 hours.",
     },
     {
       icon: Phone,
-      title: "Call Us",
+      code: "CALL",
+      title: "Call us",
       details: "+265 999 978 828",
-      description: "Mon-Fri, 9am-5pm CAT",
+      description: "Mon–Fri, 9am–5pm CAT.",
     },
     {
       icon: MapPin,
+      code: "SITE",
       title: "Location",
       details: "Malawi",
-      description: "Available worldwide online",
+      description: "Available worldwide, online.",
     },
   ];
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="hero-gradient text-primary-foreground py-16 relative overflow-hidden">
-        <div className="math-bg absolute inset-0" />
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 gradient-text">
-            Get In Touch
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have questions about our courses or resources? We'd love to hear from you. 
-            Reach out and we'll get back to you as soon as possible.
-          </p>
-        </div>
-      </section>
+      <main className="min-h-screen bg-[#F5F6FA]">
+        <PageHeader
+          index="002"
+          eyebrow="Contact"
+          title={
+            <>
+              Let's talk<br />math.
+            </>
+          }
+          description="Questions about courses, resources, or JMC Plus? Reach out — we read every message and reply within a day."
+        />
 
-      {/* Contact Cards */}
-      <section className="py-12 bg-card">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-6">
-            {contactInfo.map((info) => (
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-14">
+          {/* Contact info cards */}
+          <div className="grid md:grid-cols-3 gap-4 mb-14">
+            {contactInfo.map((info, i) => (
               <div
                 key={info.title}
-                className="bg-background border border-border rounded-xl p-6 text-center hover:shadow-lg transition-all hover:-translate-y-1"
+                className="group relative flex flex-col gap-3 rounded-2xl border border-[#0A0A0F]/10 bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-[0_16px_32px_-12px_rgba(10,10,15,0.16)]"
               >
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <info.icon className="w-8 h-8 text-primary" />
+                <div className="flex items-center justify-between">
+                  <span className="font-code text-[11px] font-bold tracking-wide text-[#4338FF]">
+                    {info.code}·{String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#4338FF]/10">
+                    <info.icon className="w-4 h-4 text-[#4338FF]" />
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold mb-2">{info.title}</h3>
-                <p className="text-primary font-medium mb-1">{info.details}</p>
-                <p className="text-muted-foreground text-sm">{info.description}</p>
+                <div>
+                  <h3 className="font-inter text-[17px] font-bold text-[#0A0A0F] mb-1">{info.title}</h3>
+                  <p className="text-[14px] font-medium text-[#0A0A0F] mb-1">{info.details}</p>
+                  <p className="text-[13px] text-[#0A0A0F]/55">{info.description}</p>
+                </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Contact Form */}
-      <section className="py-16">
-        <div className="max-w-3xl mx-auto px-4">
-          <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
-            <div className="text-center mb-8">
-              <MessageSquare className="w-12 h-12 text-primary mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Send Us a Message</h2>
-              <p className="text-muted-foreground">Fill out the form below and we'll get back to you</p>
-            </div>
+          {/* Form */}
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white border-2 border-[#0A0A0F] p-8">
+              <div className="mb-8">
+                <span className="font-code text-[10px] font-bold tracking-[0.25em] text-[#4338FF] uppercase">
+                  Send a message
+                </span>
+                <h2 className="font-inter text-2xl font-bold text-[#0A0A0F] mt-2 mb-1">We'd love to hear from you.</h2>
+                <p className="text-[14px] text-[#0A0A0F]/55">Fill out the form and we'll get back to you shortly.</p>
+              </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block font-code text-[11px] font-bold uppercase tracking-wider text-[#0A0A0F]/50 mb-2">
+                      Your name
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="John Doe"
+                      className={fieldClass}
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-code text-[11px] font-bold uppercase tracking-wider text-[#0A0A0F]/50 mb-2">
+                      Your email
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="john@example.com"
+                      className={fieldClass}
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Your Name</label>
+                  <label className="block font-code text-[11px] font-bold uppercase tracking-wider text-[#0A0A0F]/50 mb-2">
+                    Subject
+                  </label>
                   <Input
                     type="text"
-                    placeholder="John Doe"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="How can we help?"
+                    className={fieldClass}
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Your Email</label>
-                  <Input
-                    type="email"
-                    placeholder="john@example.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  <label className="block font-code text-[11px] font-bold uppercase tracking-wider text-[#0A0A0F]/50 mb-2">
+                    Message
+                  </label>
+                  <Textarea
+                    placeholder="Your message..."
+                    className={fieldClass}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    rows={6}
                     required
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Subject</label>
-                <Input
-                  type="text"
-                  placeholder="How can we help?"
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Message</label>
-                <Textarea
-                  placeholder="Your message..."
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  rows={6}
-                  required
-                />
-              </div>
-              <Button type="submit" size="lg" className="w-full gap-2">
-                <Send className="w-4 h-4" />
-                Send Message
-              </Button>
-            </form>
-          </div>
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 bg-[#4338FF] text-white py-3.5 font-code text-[11px] font-bold uppercase tracking-wider hover:bg-[#3730E8] transition-colors"
+                >
+                  <Send className="w-4 h-4" />
+                  Send message
+                </button>
+              </form>
+            </div>
 
-          {/* FAQ Preview */}
-          <div className="mt-12 text-center">
-            <Clock className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Typical Response Time</h3>
-            <p className="text-muted-foreground">
-              We typically respond to all inquiries within 24-48 hours during business days.
-            </p>
+            <div className="mt-10 flex items-center justify-center gap-2 text-center">
+              <Clock className="w-4 h-4 text-[#0A0A0F]/40" />
+              <p className="font-code text-[11px] uppercase tracking-wider text-[#0A0A0F]/45">
+                Typical response time: 24–48 hours
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+      </main>
     </Layout>
   );
 };

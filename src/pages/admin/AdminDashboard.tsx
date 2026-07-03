@@ -133,7 +133,7 @@ const AdminDashboard = () => {
             <div className="p-6"><TableSkeleton /></div>
           ) : recentActivity && recentActivity.length > 0 ? (
             <div className="divide-y divide-outline-variant">
-              {recentActivity.map((note: any) => (
+              {recentActivity.map((note: { id: string; title: string; updated_at: string; subjects: { name: string } | null }) => (
                 <div key={note.id} className="p-4 md:p-6 flex items-center justify-between hover:bg-surface-container-lowest transition-colors">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-lg bg-theorem-blue flex items-center justify-center shrink-0">
@@ -146,7 +146,7 @@ const AdminDashboard = () => {
                       </p>
                     </div>
                   </div>
-                  <Link to={`/admin/notes/${note.id}`}>
+                  <Link to={`/admin/notes/${note.id}/edit`}>
                     <button className="px-4 py-1.5 border border-outline rounded-lg font-label-caps text-label-caps text-on-surface-variant hover:bg-primary hover:text-on-primary hover:border-primary transition-all">
                       Edit
                     </button>
@@ -166,7 +166,7 @@ const AdminDashboard = () => {
           <div className="bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-sm border border-outline-variant/80">
             <h2 className="font-headline-h3 text-headline-h3 font-bold text-primary mb-stack-sm">Quick Actions</h2>
             <div className="space-y-3">
-              <Link to="/admin/notes/new" className="block w-full">
+              <Link to="/admin/notes" className="block w-full">
                 <button className="w-full flex items-center justify-start gap-3 p-4 bg-primary text-on-primary rounded-lg hover:shadow-lg hover:scale-[1.01] transition-all active:scale-95">
                   <div className="p-2 bg-white/10 rounded-md">
                     <Plus className="w-5 h-5" />
@@ -174,7 +174,7 @@ const AdminDashboard = () => {
                   <span className="font-body-md text-body-md font-semibold">Create New Note</span>
                 </button>
               </Link>
-              <Link to="/admin/tutorials/new" className="block w-full">
+              <Link to="/admin/tutorials" className="block w-full">
                 <button className="w-full flex items-center justify-start gap-3 p-4 bg-surface-container-high text-on-surface rounded-lg hover:bg-surface-container-highest transition-all">
                   <div className="p-2 rounded-md">
                     <Film className="w-5 h-5 text-on-primary-container" />

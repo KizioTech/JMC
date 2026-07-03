@@ -1,26 +1,13 @@
 import Layout from "@/components/layout/Layout";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Search, BookOpen, ChevronDown, ChevronUp, Crown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, ArrowRight } from "lucide-react";
 import { NoteCardSkeleton } from "@/components/ui/Skeletons";
 import { useQuery } from "@tanstack/react-query";
 import { getAllNotes, getAllSubjects, NoteRow } from "@/services/contentService";
 import { supabase } from "@/lib/supabaseClient";
-import { useEffect } from "react";
 import { cn } from "@/lib/utils";
-
-const getDifficultyStyle = (difficulty?: string | null) => {
-  switch (difficulty) {
-    case "Beginner":
-      return { pill: "bg-beginner-green/10 text-beginner-green", label: "BEGINNER" };
-    case "Intermediate":
-      return { pill: "bg-intermediate-yellow/10 text-intermediate-yellow", label: "INTERMEDIATE" };
-    case "Advanced":
-      return { pill: "bg-advanced-red/10 text-advanced-red", label: "ADVANCED" };
-    default:
-      return { pill: "bg-primary-fixed/30 text-on-primary-fixed", label: "NOTE" };
-  }
-};
+import { Link } from "react-router-dom";
+import NoteCard from "@/components/library/NoteCard";
 
 const Library = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,52 +52,35 @@ const Library = () => {
         Object.entries(groupedNotes).filter(([slug]) => slug === activeCategory)
       );
 
-  const renderNoteCard = (doc: NoteRow) => {
-    const { pill, label } = getDifficultyStyle(doc.difficulty);
-    const subjectSlug = doc.subjects?.slug;
-    const date = doc.updated_at ? new Date(doc.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
-
-    return (
-      <Link
-        to={`/notes/${subjectSlug}/${doc.slug}`}
-        key={doc.id}
-        className="note-card-hover group bg-surface-container-lowest border border-outline-variant p-gutter rounded-xl transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-md"
-      >
-        <div className="h-40 w-full rounded-lg mb-4 bg-surface-container overflow-hidden">
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-fixed/30 to-surface-container-high group-hover:scale-105 transition-transform duration-500">
-            <BookOpen className="w-12 h-12 text-primary/40" />
-          </div>
-        </div>
-        <div className="flex items-start justify-between mb-2">
-          <span className={cn("px-2 py-0.5 rounded-full font-label-caps text-[10px]", pill)}>{label}</span>
-          {date && <span className="font-body-sm text-body-sm text-outline">{date}</span>}
-        </div>
-        <h3 className="font-headline-h3 text-headline-h3 mb-1 group-hover:text-secondary transition-colors line-clamp-2">{doc.title}</h3>
-        <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">{doc.subjects?.name}</p>
-      </Link>
-    );
-  };
+  const totalShown = Object.values(filteredGroups).reduce((n, docs) => n + docs.length, 0);
 
   return (
     <Layout>
-      <main className="min-h-screen" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0)", backgroundSize: "32px 32px" }}>
-        {/* Header */}
-        <header className="bg-surface-container-lowest py-stack-lg border-b border-outline-variant">
+      <main className="min-h-screen bg-[#F5F6FA]">
+        {/* Masthead */}
+        <header className="border-b-2 border-[#0A0A0F] pt-14 pb-8">
           <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-gutter">
-              <div>
-                <span className="font-label-caps text-label-caps text-secondary uppercase tracking-widest mb-2 block">Resource Center</span>
-                <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-4">Academic Library</h1>
-                <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-                  Access curated mathematical proofs, technical documentation, and comprehensive notes designed for rigorous academic mastery.
+            <div className="flex items-center gap-2.5 mb-4">
+              <span className="font-code text-[11px] font-bold tracking-wide text-white bg-[#4338FF] px-2 py-1">001</span>
+              <span className="font-code text-[11px] font-bold tracking-[0.25em] text-[#0A0A0F]/50 uppercase">Library Index</span>
+            </div>
+
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+              <div className="max-w-2xl">
+                <h1 className="font-inter text-[40px] sm:text-[52px] leading-[0.98] font-bold text-[#0A0A0F] mb-4">
+                  Study notes,<br />indexed by subject.
+                </h1>
+                <p className="text-[15px] text-[#0A0A0F]/60 max-w-md">
+                  Every proof, derivation, and worked identity JMC has published — sorted, searchable, and numbered like a catalog.
                 </p>
               </div>
-              <div className="w-full md:w-96">
+
+              <div className="w-full lg:w-80 shrink-0">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-outline w-5 h-5" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#0A0A0F]/40 w-4 h-4" />
                   <input
-                    className="w-full pl-12 pr-4 py-4 rounded-xl border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all bg-surface font-body-md text-on-surface shadow-sm focus:outline-none placeholder:text-outline"
-                    placeholder="Search notes by title or topic..."
+                    className="w-full pl-11 pr-4 py-3.5 border-2 border-[#0A0A0F] bg-white font-code text-[13px] text-[#0A0A0F] placeholder:text-[#0A0A0F]/35 focus:outline-none focus:border-[#4338FF] transition-colors"
+                    placeholder="search notes..."
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -121,109 +91,105 @@ const Library = () => {
           </div>
         </header>
 
-        {/* Main Content */}
-        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-md flex flex-col md:flex-row gap-gutter">
-          {/* Sidebar */}
-          <aside className="w-full md:w-64 flex-shrink-0">
-            <div className="sticky top-24 space-y-stack-md">
-              <div>
-                <h3 className="font-label-caps text-label-caps text-outline mb-4">SUBJECTS</h3>
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={() => setActiveCategory("all")}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all font-body-sm text-body-sm",
-                      activeCategory === "all"
-                        ? "bg-primary-fixed text-on-primary-fixed font-bold"
-                        : "text-on-surface-variant hover:bg-surface-container-high"
-                    )}
-                  >
-                    <BookOpen className="w-5 h-5" />
-                    All Subjects
-                  </button>
-                  {subjects.map(subject => (
-                    <button
-                      key={subject.slug}
-                      onClick={() => setActiveCategory(subject.slug)}
-                      className={cn(
-                        "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all font-body-sm text-body-sm",
-                        activeCategory === subject.slug
-                          ? "bg-primary-fixed text-on-primary-fixed font-bold"
-                          : "text-on-surface-variant hover:bg-surface-container-high"
-                      )}
-                    >
-                      <BookOpen className="w-5 h-5 group-hover:translate-x-1 duration-200" />
-                      {subject.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* JMC Plus CTA */}
-              <div className="p-stack-md bg-secondary text-on-secondary rounded-xl shadow-lg">
-                <Crown className="w-6 h-6 mb-2" />
-                <h4 className="font-headline-h3 text-headline-h3 mb-2">JMC Plus</h4>
-                <p className="font-body-sm text-body-sm opacity-90 mb-4">Unlock advanced proofs and exclusive practice problem sets.</p>
-                <Link to="/JMCPlus">
-                  <button className="w-full py-2 bg-white text-secondary font-bold rounded-lg hover:bg-surface-container-lowest transition-colors">
-                    Upgrade Now
-                  </button>
-                </Link>
-              </div>
+        {/* Subject filter — horizontal, underline-indicated */}
+        <div className="sticky top-16 z-10 bg-[#F5F6FA]/95 backdrop-blur-sm border-b border-[#0A0A0F]/12">
+          <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+            <div className="flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+              <button
+                onClick={() => setActiveCategory("all")}
+                className={cn(
+                  "shrink-0 font-code text-[11px] font-bold uppercase tracking-wider px-4 py-4 border-b-2 transition-colors whitespace-nowrap",
+                  activeCategory === "all"
+                    ? "border-[#4338FF] text-[#0A0A0F]"
+                    : "border-transparent text-[#0A0A0F]/40 hover:text-[#0A0A0F]"
+                )}
+              >
+                All
+              </button>
+              {subjects.map(subject => (
+                <button
+                  key={subject.slug}
+                  onClick={() => setActiveCategory(subject.slug)}
+                  className={cn(
+                    "shrink-0 font-code text-[11px] font-bold uppercase tracking-wider px-4 py-4 border-b-2 transition-colors whitespace-nowrap",
+                    activeCategory === subject.slug
+                      ? "border-[#4338FF] text-[#0A0A0F]"
+                      : "border-transparent text-[#0A0A0F]/40 hover:text-[#0A0A0F]"
+                  )}
+                >
+                  {subject.name}
+                </button>
+              ))}
+              <span className="ml-auto shrink-0 font-code text-[10px] text-[#0A0A0F]/35 pl-4 hidden sm:inline">
+                {loading ? "" : `${totalShown} ${totalShown === 1 ? "note" : "notes"}`}
+              </span>
             </div>
-          </aside>
+          </div>
+        </div>
 
-          {/* Notes Grid */}
-          <div className="flex-grow flex flex-col gap-stack-lg">
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-                {Array.from({ length: 6 }).map((_, i) => <NoteCardSkeleton key={i} />)}
-              </div>
-            ) : Object.keys(filteredGroups).length === 0 ? (
-              <div className="text-center py-24">
-                <BookOpen className="w-16 h-16 text-outline/30 mx-auto mb-4" />
-                <p className="font-body-md text-body-md text-on-surface-variant">No notes found matching your criteria.</p>
-              </div>
-            ) : (
-              Object.entries(filteredGroups).map(([categorySlug, docs]) => {
+        {/* Content */}
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-14">
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => <NoteCardSkeleton key={i} />)}
+            </div>
+          ) : Object.keys(filteredGroups).length === 0 ? (
+            <div className="text-center py-24 border-2 border-dashed border-[#0A0A0F]/15">
+              <p className="font-inter text-xl font-bold text-[#0A0A0F] mb-1">No matches.</p>
+              <p className="font-code text-[12px] text-[#0A0A0F]/50">Try a different subject or search term.</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-14">
+              {Object.entries(filteredGroups).map(([categorySlug, docs]) => {
                 const subjectName = subjects.find(s => s.slug === categorySlug)?.name || categorySlug;
                 const isExpanded = expanded[categorySlug] || false;
-                const docsToShow = isExpanded ? docs : docs.slice(0, 6);
+                const docsToShow = isExpanded ? docs : docs.slice(0, 8);
 
                 return (
                   <section key={categorySlug}>
-                    <div className="flex items-center justify-between border-b border-outline-variant pb-2 mb-gutter">
-                      <div className="flex items-center gap-2">
-                        <BookOpen className="w-5 h-5 text-primary" />
-                        <h2 className="font-headline-h2 text-headline-h2">{subjectName}</h2>
-                      </div>
-                      {docs.length > 6 && (
+                    <div className="flex items-baseline justify-between mb-5">
+                      <h2 className="font-inter text-2xl font-bold text-[#0A0A0F]">
+                        {subjectName}
+                      </h2>
+                      {docs.length > 8 && (
                         <button
                           onClick={() => setExpanded(prev => ({ ...prev, [categorySlug]: !isExpanded }))}
-                          className="font-label-caps text-label-caps text-secondary flex items-center gap-1 hover:underline"
+                          className="font-code text-[11px] font-bold uppercase tracking-wider text-[#4338FF] flex items-center gap-1 hover:gap-2 transition-all"
                         >
-                          {isExpanded ? (<>Show Less <ChevronUp className="w-4 h-4" /></>) : (<>See More <ChevronDown className="w-4 h-4" /></>)}
+                          {isExpanded ? "Show less" : `All ${docs.length}`}
+                          <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       )}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-                      {docsToShow.map(doc => renderNoteCard(doc))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {docsToShow.map((doc, i) => (
+                        <NoteCard key={doc.id} doc={doc} position={i + 1} />
+                      ))}
                     </div>
                   </section>
                 );
-              })
-            )}
+              })}
+            </div>
+          )}
 
-            {/* Newsletter Callout */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-stack-lg flex flex-col md:flex-row items-center gap-stack-lg shadow-sm mt-4">
-              <div className="flex-grow">
-                <h2 className="font-headline-h2 text-headline-h2 mb-2">Stay intellectually sharp.</h2>
-                <p className="font-body-md text-body-md text-on-surface-variant">Get the latest mathematical proofs and library updates delivered to your inbox weekly.</p>
-              </div>
-              <div className="flex gap-2 w-full md:w-auto">
-                <input className="px-4 py-2 rounded-lg border border-outline-variant focus:border-primary w-full md:w-64 focus:outline-none text-on-surface" placeholder="Email address" type="email" />
-                <button className="bg-primary text-on-primary px-6 py-2 rounded-lg font-bold hover:opacity-90 transition-colors whitespace-nowrap">Subscribe</button>
-              </div>
+          {/* JMC Plus / newsletter band */}
+          <div className="mt-16 bg-[#0A0A0F] text-white p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+              <span className="font-code text-[10px] font-bold tracking-[0.25em] text-[#4338FF] uppercase">JMC Plus</span>
+              <h2 className="font-inter text-2xl font-bold mt-2 mb-1">Stay intellectually sharp.</h2>
+              <p className="text-sm text-white/60 max-w-md">Advanced proofs, exclusive problem sets, and library updates — weekly.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto shrink-0">
+              <input
+                className="px-4 py-3 bg-white/10 border border-white/20 font-code text-[13px] text-white placeholder:text-white/40 focus:outline-none focus:border-[#4338FF] w-full sm:w-64"
+                placeholder="email address"
+                type="email"
+              />
+              <Link to="/JMCPlus">
+                <button className="w-full sm:w-auto px-6 py-3 bg-[#4338FF] text-white font-code text-[11px] font-bold uppercase tracking-wider hover:bg-[#3730E8] transition-colors whitespace-nowrap">
+                  Subscribe →
+                </button>
+              </Link>
             </div>
           </div>
         </div>

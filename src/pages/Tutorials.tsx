@@ -1,170 +1,128 @@
 import Layout from "@/components/layout/Layout";
 import { Link } from "react-router-dom";
-import {
-  BookOpen,
-  Clock,
-  Star,
-  ArrowRight,
-  CheckCircle,
-} from "lucide-react";
+import PageHeader from "@/components/PageHeader";
+import TutorialCard from "@/components/tutorials/TutorialCard";
+import SubjectArt from "@/components/library/SubjectArt";
+import { Clock, Star, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllTutorials } from "@/services/contentService";
 import { TutorialCardSkeleton } from "@/components/ui/Skeletons";
-import { cn } from "@/lib/utils";
-
-const getDifficultyStyle = (difficulty?: string | null) => {
-  switch (difficulty) {
-    case "Beginner":
-      return "bg-beginner-green text-white";
-    case "Intermediate":
-      return "bg-intermediate-yellow text-white";
-    case "Advanced":
-      return "bg-advanced-red text-white";
-    default:
-      return "bg-primary-fixed text-on-primary-fixed";
-  }
-};
 
 const Tutorials = () => {
   const { data: tutorials = [], isLoading } = useQuery({
-    queryKey: ['tutorials'],
-    queryFn: getAllTutorials
+    queryKey: ["tutorials"],
+    queryFn: getAllTutorials,
   });
 
   const featuredTutorial = tutorials.length > 0 ? tutorials[0] : null;
+  const restTutorials = tutorials.length > 0 ? tutorials.slice(1) : [];
 
   return (
     <Layout>
-      <main className="flex flex-col min-h-screen">
-        {/* Header */}
-        <header className="w-full bg-primary-container py-16 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,#dae2fd_1px,transparent_1px)] [background-size:20px_20px]"></div>
-          <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
-            <span className="font-label-caps text-label-caps text-primary-fixed uppercase tracking-widest mb-2 block">Step-by-Step Learning</span>
-            <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-primary-fixed mb-4">Mathematics Tutorials</h1>
-            <p className="font-body-lg text-body-lg text-on-primary-container max-w-2xl">
-              Step-by-step guides to help you master mathematical concepts at your own pace, from basics to advanced proofs.
-            </p>
-          </div>
-        </header>
+      <main className="min-h-screen bg-[#F5F6FA]">
+        <PageHeader
+          index="005"
+          eyebrow="Tutorials"
+          title={
+            <>
+              Step by step,<br />start to finish.
+            </>
+          }
+          description="Guided walkthroughs that build understanding one step at a time — from first principles to worked proofs."
+        />
 
-        {/* Featured Tutorial */}
+        {/* Featured tutorial */}
         {(isLoading || featuredTutorial) && (
-          <section className="py-stack-lg bg-surface border-b border-outline-variant">
-            <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-              <h2 className="font-headline-h2 text-headline-h2 mb-gutter">Featured Tutorial</h2>
-              {isLoading ? (
-                <div className="animate-pulse bg-surface-container-high rounded-xl h-48 w-full"></div>
-              ) : featuredTutorial ? (
-                <div className="bg-surface-container-low border border-outline-variant rounded-xl p-8 flex flex-col md:flex-row gap-8 items-center">
-                  <div className="flex-1">
-                    <span className="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps rounded-full mb-4">
-                      Most Popular
-                    </span>
-                    <h3 className="font-headline-h1 text-headline-h1 mb-3 text-primary">{featuredTutorial.title}</h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant mb-6">{featuredTutorial.description || "Learn this topic in depth."}</p>
-                    <div className="flex flex-wrap gap-4 mb-6 text-on-surface-variant">
-                      {featuredTutorial.duration_text && (
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          <span className="font-body-sm text-body-sm">{featuredTutorial.duration_text}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2">
-                        <BookOpen className="w-4 h-4" />
-                        <span className="font-body-sm text-body-sm">{featuredTutorial.subjects?.name}</span>
-                      </div>
-                      {featuredTutorial.rating && (
-                        <div className="flex items-center gap-2">
-                          <Star className="w-4 h-4 fill-intermediate-yellow text-intermediate-yellow" />
-                          <span className="font-body-sm text-body-sm">{featuredTutorial.rating}</span>
-                        </div>
-                      )}
-                    </div>
-                    <Link to={`/tutorials/${featuredTutorial.subjects?.slug}/${featuredTutorial.slug}`}>
-                      <button className="px-8 py-3 bg-primary text-on-primary font-headline-h3 text-headline-h3 rounded-lg hover:shadow-lg active:scale-95 transition-all duration-200 flex items-center gap-2">
-                        Start Learning
-                        <ArrowRight className="w-5 h-5" />
-                      </button>
-                    </Link>
-                  </div>
-                  <div className="hidden md:flex justify-center shrink-0">
-                    <div className="w-52 h-52 bg-primary-fixed/30 rounded-full flex items-center justify-center">
-                      <BookOpen className="w-24 h-24 text-primary/30" />
-                    </div>
-                  </div>
-                </div>
-              ) : null}
+          <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-14">
+            <div className="flex items-center gap-2.5 mb-5">
+              <span className="font-code text-[11px] font-bold tracking-wide text-white bg-[#0A0A0F] px-2 py-1">
+                FEATURED
+              </span>
+              <span className="font-code text-[11px] font-bold tracking-[0.25em] text-[#0A0A0F]/50 uppercase">
+                Start here
+              </span>
             </div>
-          </section>
+
+            {isLoading ? (
+              <div className="animate-pulse bg-white rounded-2xl h-56 w-full border border-[#0A0A0F]/10" />
+            ) : featuredTutorial ? (
+              <div className="flex flex-col md:flex-row overflow-hidden rounded-2xl border border-[#0A0A0F]/10 bg-white shadow-sm">
+                <div className="flex-1 p-8 md:p-10">
+                  <span className="inline-block font-code text-[10px] font-bold uppercase tracking-wider text-[#4338FF] bg-[#4338FF]/10 px-2.5 py-1 mb-4">
+                    Most popular
+                  </span>
+                  <h3 className="font-inter text-2xl md:text-3xl font-bold text-[#0A0A0F] mb-3">
+                    {featuredTutorial.title}
+                  </h3>
+                  <p className="text-[14px] text-[#0A0A0F]/60 mb-6 max-w-lg leading-relaxed">
+                    {featuredTutorial.description || "Learn this topic in depth."}
+                  </p>
+                  <div className="flex flex-wrap gap-4 mb-7">
+                    {featuredTutorial.duration_text && (
+                      <div className="flex items-center gap-1.5 font-code text-[11px] uppercase tracking-wider text-[#0A0A0F]/50">
+                        <Clock className="w-3.5 h-3.5" />
+                        {featuredTutorial.duration_text}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1.5 font-code text-[11px] uppercase tracking-wider text-[#0A0A0F]/50">
+                      {featuredTutorial.subjects?.name}
+                    </div>
+                    {featuredTutorial.rating && (
+                      <div className="flex items-center gap-1.5 font-code text-[11px] uppercase tracking-wider text-[#0A0A0F]/50">
+                        <Star className="w-3.5 h-3.5 fill-[#D97706] text-[#D97706]" />
+                        {featuredTutorial.rating}
+                      </div>
+                    )}
+                  </div>
+                  <Link to={`/tutorials/${featuredTutorial.subjects?.slug}/${featuredTutorial.slug}`}>
+                    <button className="flex items-center gap-2 bg-[#4338FF] text-white px-6 py-3 font-code text-[11px] font-bold uppercase tracking-wider hover:bg-[#3730E8] transition-colors">
+                      Start learning
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </Link>
+                </div>
+                <div className="hidden md:block w-72 shrink-0 relative">
+                  <SubjectArt subject={featuredTutorial.subjects?.name} />
+                </div>
+              </div>
+            ) : null}
+          </div>
         )}
 
-        {/* All Tutorials */}
-        <section className="py-stack-lg flex-grow bg-surface-container-lowest">
-          <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-            <h2 className="font-headline-h2 text-headline-h2 mb-gutter">All Tutorials</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-              {isLoading ? (
-                Array.from({ length: 6 }).map((_, i) => <TutorialCardSkeleton key={i} />)
-              ) : tutorials.length === 0 ? (
-                <p className="col-span-full text-center text-on-surface-variant py-12 font-body-md text-body-md">No tutorials published yet.</p>
-              ) : (
-                tutorials.map((tutorial) => (
-                  <div
-                    key={tutorial.id}
-                    className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-md group"
-                  >
-                    <div className="h-2 bg-primary shrink-0" />
-                    <div className="p-6 flex flex-col flex-1">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="font-label-caps text-label-caps text-on-surface-variant">{tutorial.subjects?.name}</span>
-                        {tutorial.difficulty && (
-                          <span className={cn("px-3 py-1 rounded-full font-label-caps text-label-caps shadow-sm", getDifficultyStyle(tutorial.difficulty))}>
-                            {tutorial.difficulty}
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="font-headline-h3 text-headline-h3 mb-2 group-hover:text-secondary transition-colors">{tutorial.title}</h3>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">{tutorial.description}</p>
-
-                      {tutorial.topics && tutorial.topics.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {tutorial.topics.slice(0, 3).map((topic) => (
-                            <span key={topic} className="px-2 py-1 bg-surface-container text-on-surface-variant text-xs rounded-md font-label-caps">
-                              {topic}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="flex items-center text-on-surface-variant gap-4 mb-4 mt-auto">
-                        {tutorial.duration_text && (
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            <span className="font-body-sm text-body-sm">{tutorial.duration_text}</span>
-                          </div>
-                        )}
-                        {tutorial.rating && (
-                          <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 fill-intermediate-yellow text-intermediate-yellow" />
-                            <span className="font-body-sm text-body-sm">{tutorial.rating}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <Link to={`/tutorials/${tutorial.subjects?.slug}/${tutorial.slug}`} className="w-full">
-                        <button className="w-full bg-primary text-on-primary py-2.5 rounded-lg font-body-sm font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-2">
-                          <CheckCircle className="w-4 h-4" />
-                          View Tutorial
-                        </button>
-                      </Link>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+        {/* All tutorials */}
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-14">
+          <div className="flex items-baseline justify-between mb-5">
+            <h2 className="font-inter text-2xl font-bold text-[#0A0A0F]">All tutorials</h2>
+            {!isLoading && (
+              <span className="font-code text-[10px] text-[#0A0A0F]/35">
+                {restTutorials.length} {restTutorials.length === 1 ? "tutorial" : "tutorials"}
+              </span>
+            )}
           </div>
-        </section>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <TutorialCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : tutorials.length === 0 ? (
+            <div className="text-center py-24 border-2 border-dashed border-[#0A0A0F]/15">
+              <p className="font-inter text-xl font-bold text-[#0A0A0F] mb-1">No tutorials yet.</p>
+              <p className="font-code text-[12px] text-[#0A0A0F]/50">Check back soon.</p>
+            </div>
+          ) : restTutorials.length === 0 ? (
+            <p className="text-center text-[#0A0A0F]/50 py-12 font-code text-[12px]">
+              That's everything for now — check back for more tutorials soon.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {restTutorials.map((tutorial, i) => (
+                <TutorialCard key={tutorial.id} tutorial={tutorial} position={i + 1} />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </Layout>
   );

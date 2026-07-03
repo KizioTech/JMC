@@ -1,8 +1,7 @@
 import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import PageHeader from "@/components/PageHeader";
 import { Check, Rocket, TrendingUp, Star, Crown, GraduationCap } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const JMCPlus = () => {
   const packages = [
@@ -17,9 +16,10 @@ const JMCPlus = () => {
         "Access to basic video tutorials",
         "Practice problems with solutions",
         "Progress tracking",
-        "Mobile app access"
+        "Mobile app access",
       ],
-      popular: false
+      popular: false,
+      cta: "Get started",
     },
     {
       id: "growth",
@@ -33,9 +33,10 @@ const JMCPlus = () => {
         "Live weekly Q&A sessions",
         "Downloadable study materials",
         "Practice tests with detailed solutions",
-        "Email support"
+        "Email support",
       ],
-      popular: true
+      popular: true,
+      cta: "Subscribe now",
     },
     {
       id: "pro",
@@ -50,104 +51,104 @@ const JMCPlus = () => {
         "Advanced problem sets",
         "Exam preparation modules",
         "Priority support",
-        "Custom study plans"
+        "Custom study plans",
       ],
-      popular: false
-    }
+      popular: false,
+      cta: "Upgrade to Pro",
+    },
   ];
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="hero-gradient text-primary-foreground py-24 relative overflow-hidden">
-        <div className="math-bg absolute inset-0" />
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-6 gradient-text">
-            JMC Plus
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            JMC Plus is a premium membership that gives you access to all of our courses and resources.
-          </p>
-        </div>
-      </section>
+      <main className="min-h-screen bg-[#F5F6FA]">
+        <PageHeader
+          index="004"
+          eyebrow="JMC Plus"
+          title={
+            <>
+              Study smarter,<br />unlock more.
+            </>
+          }
+          description="A premium membership that gives you full access to JMC's courses, mentorship, and exclusive material."
+        />
 
-      {/* Pricing Section */}
-      <section className="py-16 bg-background -mt-16 relative z-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {packages.map((pkg) => {
-              const IconComponent = pkg.icon;
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-14">
+          <div className="grid md:grid-cols-3 gap-4 mb-12">
+            {packages.map((pkg, i) => {
+              const Icon = pkg.icon;
               return (
-                <Card
+                <div
                   key={pkg.id}
-                  className={`relative overflow-hidden transition-all hover:shadow-xl ${
-                    pkg.popular ? 'ring-2 ring-primary scale-105' : 'hover:-translate-y-2'
-                  }`}
-                >
-                  {pkg.popular && (
-                    <div className="absolute -top-3 -right-3 bg-primary text-primary-foreground px-6 py-1 rounded-full text-sm font-semibold transform rotate-12 shadow-lg">
-                      Most Popular
-                    </div>
+                  className={cn(
+                    "group relative flex flex-col rounded-2xl border bg-white p-7 shadow-sm transition-shadow duration-300 hover:shadow-[0_16px_32px_-12px_rgba(10,10,15,0.16)]",
+                    pkg.popular ? "border-[#4338FF] border-2" : "border-[#0A0A0F]/10"
                   )}
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="font-code text-[11px] font-bold tracking-wide text-[#4338FF]">
+                      PLN·{String(i + 1).padStart(2, "0")}
+                    </span>
+                    {pkg.popular && (
+                      <span className="font-code text-[10px] font-bold uppercase tracking-wider text-white bg-[#4338FF] px-2 py-1">
+                        Most popular
+                      </span>
+                    )}
+                  </div>
 
-                  <CardHeader className="text-center pb-4">
-                    <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
-                      <IconComponent className="w-8 h-8 text-primary" />
-                    </div>
-                    <CardTitle className="text-2xl">{pkg.name}</CardTitle>
-                    <CardDescription>{pkg.description}</CardDescription>
-                  </CardHeader>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#4338FF]/10 mb-4">
+                    <Icon className="w-5 h-5 text-[#4338FF]" />
+                  </div>
 
-                  <CardContent>
-                    <div className="text-center mb-6 p-4 bg-muted/50 rounded-lg">
-                      <div className="text-3xl font-bold text-primary">{pkg.price}</div>
-                      <div className="text-muted-foreground">{pkg.period}</div>
-                    </div>
+                  <h3 className="font-inter text-xl font-bold text-[#0A0A0F] mb-1">{pkg.name}</h3>
+                  <p className="text-[13px] text-[#0A0A0F]/55 mb-6">{pkg.description}</p>
 
-                    <ul className="space-y-3 mb-6">
-                      {pkg.features.map((feature, index) => (
-                        <li key={index} className="flex items-center gap-3">
-                          <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                          <span className="text-sm">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="mb-6 pb-6 border-b border-[#0A0A0F]/8">
+                    <span className="font-inter text-3xl font-bold text-[#0A0A0F]">{pkg.price}</span>
+                    <span className="text-[13px] text-[#0A0A0F]/50">{pkg.period}</span>
+                  </div>
 
-                    <Button
-                      className={`w-full gap-2 ${
-                        pkg.popular ? 'bg-primary hover:bg-primary/90' : ''
-                      }`}
-                      variant={pkg.popular ? 'default' : 'outline'}
-                      onClick={() => alert('Subscription feature coming soon!')}
-                    >
-                      {pkg.id === 'starter' && <Rocket className="w-4 h-4" />}
-                      {pkg.id === 'growth' && <Crown className="w-4 h-4" />}
-                      {pkg.id === 'pro' && <GraduationCap className="w-4 h-4" />}
-                      {pkg.id === 'starter' ? 'Get Started' :
-                       pkg.id === 'growth' ? 'Subscribe Now' : 'Upgrade to Pro'}
-                    </Button>
-                  </CardContent>
-                </Card>
+                  <ul className="space-y-3 mb-8 flex-1">
+                    {pkg.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2.5">
+                        <Check className="w-4 h-4 text-[#4338FF] shrink-0 mt-0.5" />
+                        <span className="text-[13px] text-[#0A0A0F]/80">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => alert("Subscription feature coming soon!")}
+                    className={cn(
+                      "w-full flex items-center justify-center gap-2 py-3 font-code text-[11px] font-bold uppercase tracking-wider transition-colors",
+                      pkg.popular
+                        ? "bg-[#4338FF] text-white hover:bg-[#3730E8]"
+                        : "border-2 border-[#0A0A0F] text-[#0A0A0F] hover:bg-[#0A0A0F] hover:text-white"
+                    )}
+                  >
+                    {pkg.id === "starter" && <Rocket className="w-3.5 h-3.5" />}
+                    {pkg.id === "growth" && <Crown className="w-3.5 h-3.5" />}
+                    {pkg.id === "pro" && <GraduationCap className="w-3.5 h-3.5" />}
+                    {pkg.cta}
+                  </button>
+                </div>
               );
             })}
           </div>
 
-          {/* Footer */}
-          <Card className="text-center">
-            <CardContent className="pt-6">
-              <p className="text-muted-foreground mb-2">
-                All packages include a 7-day free trial. Cancel anytime.
-              </p>
-              <p className="text-sm">
-                Need help choosing?{' '}
-                <a href="/contact" className="text-primary hover:underline font-semibold">
-                  Contact our team
-                </a>
-              </p>
-            </CardContent>
-          </Card>
+          {/* Footer note */}
+          <div className="text-center border-t-2 border-[#0A0A0F] pt-8">
+            <p className="text-[14px] text-[#0A0A0F]/60 mb-1">
+              All packages include a 7-day free trial. Cancel anytime.
+            </p>
+            <p className="font-code text-[12px] text-[#0A0A0F]/45">
+              Need help choosing?{" "}
+              <a href="/contact" className="text-[#4338FF] hover:underline font-bold">
+                Contact our team
+              </a>
+            </p>
+          </div>
         </div>
-      </section>
+      </main>
     </Layout>
   );
 };

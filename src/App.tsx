@@ -33,7 +33,9 @@ const TutorialsManager = lazy(() => import("./pages/admin/TutorialsManager"));
 const TutorialEditorPage = lazy(() => import("./pages/admin/TutorialEditorPage"));
 const SubjectsManager = lazy(() => import("./pages/admin/SubjectsManager"));
 const QuizzesManager = lazy(() => import("./pages/admin/QuizzesManager"));
+const QuizEditorPage = lazy(() => import("./pages/admin/QuizEditorPage"));
 const CoursesManager = lazy(() => import("./pages/admin/CoursesManager"));
+const CourseEditorPage = lazy(() => import("./pages/admin/CourseEditorPage"));
 const MediaManager = lazy(() => import("./pages/admin/MediaManager"));
 
 // Preload critical routes
@@ -90,6 +92,8 @@ const App = () => {
             {/* Full-page editors (outside AdminLayout) */}
             <Route path="/admin/notes/:id/edit" element={<NoteEditorPage />} />
             <Route path="/admin/tutorials/:id/edit" element={<TutorialEditorPage />} />
+            <Route path="/admin/quizzes/:id/edit" element={<QuizEditorPage />} />
+            <Route path="/admin/courses/:id/edit" element={<CourseEditorPage />} />
             
             <Route path="/jmcplus" element={<JMCPlus />} />
             <Route path="/contact" element={<Contact />} />

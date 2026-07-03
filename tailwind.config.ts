@@ -47,6 +47,7 @@ export default {
         "body-lg": ["Inter"],
         "code": ["JetBrains Mono"],
         "display-lg-mobile": ["Playfair Display"],
+        "display-bold": ["Space Grotesk", "sans-serif"],
 
         serif: ["Times New Roman", "Times", "Georgia", "serif"],
         sans: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
