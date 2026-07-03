@@ -62,6 +62,32 @@ export async function getAllSubjects(): Promise<SubjectRow[]> {
   return data;
 }
 
+export async function createSubject(subject: Omit<SubjectRow, 'id'>): Promise<SubjectRow> {
+  const { data, error } = await supabase
+    .from('subjects')
+    .insert([subject])
+    .select()
+    .single();
+  if (error) throw error;
+  return data as SubjectRow;
+}
+
+export async function updateSubject(id: string, updates: Partial<Omit<SubjectRow, 'id'>>): Promise<SubjectRow> {
+  const { data, error } = await supabase
+    .from('subjects')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as SubjectRow;
+}
+
+export async function deleteSubject(id: string): Promise<void> {
+  const { error } = await supabase.from('subjects').delete().eq('id', id);
+  if (error) throw error;
+}
+
 // ——————————————————————————————————————————————————
 // Notes
 // ——————————————————————————————————————————————————
