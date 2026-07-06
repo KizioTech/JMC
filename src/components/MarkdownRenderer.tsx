@@ -56,7 +56,17 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           /* ---- Math styling ---- */
           .katex-display {
             display: block !important;
-            margin: 1.75rem auto !important;
+            /* NOTE: text-align is intentionally LEFT, not center.
+               katex.min.css ships a default .katex-display { text-align: center }
+               rule. Combined with overflow-x: auto, that centering makes the
+               left half of any equation wider than the box permanently
+               unreachable: browsers won't scroll to a negative scrollLeft in
+               LTR, so the portion that "spills" left of the box is clipped
+               and no amount of touch/scrollbar dragging can reveal it. Forcing
+               left alignment here means overflow only ever spills to the
+               right, where overflow-x: auto can actually scroll to it. */
+            text-align: left !important;
+            margin: 1.75rem 0 !important;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 0.625rem;
@@ -73,14 +83,33 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
 
           .katex-display > .katex {
             display: inline-block;
-            text-align: center !important;
+            text-align: left !important;
             white-space: nowrap;
             scroll-snap-align: start;
             padding: 0 1rem;
           }
 
           .katex { font-size: clamp(1rem, 1vw + 0.5rem, 1.15rem); }
-          .katex-html { text-align: center !important; }
+          .katex-html { text-align: left !important; }
+
+          /* ---- Inline math containment ----
+             An inline formula (single $...$) has no wrapper of its own, so a
+             single wide fraction/sum/matrix in a sentence used to have
+             nothing bounding its width. On a narrow viewport that forced the
+             *entire page* to grow wider than the screen and scroll
+             horizontally — which is why even short notes with just one
+             inline equation looked broken, not just ones with long content.
+             Scoping this to inline (non-display) katex nodes lets a single
+             oversized formula scroll on its own instead of blowing out the
+             page. */
+          .jmc-notes .katex:not(.katex-display .katex) {
+            display: inline-block;
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            vertical-align: middle;
+            -webkit-overflow-scrolling: touch;
+          }
 
           .katex-display::-webkit-scrollbar { height: 6px; }
           .katex-display::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
@@ -192,7 +221,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           .md-link:hover { color: #1e3a8a; text-decoration-color: #1e3a8a; }
         `
       }} />
-      <div className="jmc-notes max-w-none">
+      <div className="jmc-notes max-w-none overflow-x-hidden">
         <ReactMarkdown
           remarkPlugins={[[remarkMath, mathOptions], remarkGfm]}
           rehypePlugins={[rehypeKatex, rehypeRaw]}
@@ -201,7 +230,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
               const match = /language-(\w+)/.exec(className || '');
               const dataLine = node?.position?.start?.line;
               return !inline && match ? (
-                <div data-line={dataLine}>
+                <div data-line={dataLine} className="max-w-full overflow-x-auto">
                   <SyntaxHighlighter
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     style={oneDark as any}
