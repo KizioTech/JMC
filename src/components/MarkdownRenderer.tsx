@@ -221,7 +221,14 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           .md-link:hover { color: #1e3a8a; text-decoration-color: #1e3a8a; }
         `
       }} />
-      <div className="jmc-notes max-w-none overflow-x-hidden">
+      {/* overflow-x via inline style (not the overflow-x-hidden utility): setting only
+          overflow-x through a class leaves overflow-y at its default 'visible', and per
+          the CSS Overflow spec a container with one axis hidden and the other visible has
+          its "visible" axis silently forced to 'auto' — which can add an unwanted nested
+          vertical scrollbar and, in some browsers, undermine the horizontal clipping this
+          wrapper exists for. 'clip' sidesteps that quirk entirely: it clips the x-axis
+          without touching y-axis scroll behavior. */}
+      <div className="jmc-notes max-w-none" style={{ overflowX: 'clip' }}>
         <ReactMarkdown
           remarkPlugins={[[remarkMath, mathOptions], remarkGfm]}
           rehypePlugins={[rehypeKatex, rehypeRaw]}
@@ -348,8 +355,18 @@ h4: ({ children, node }) => {
               </li>
             ),
             table: ({ children, node }) => (
-              <div data-line={node?.position?.start?.line} className="overflow-x-auto my-6 -mx-2 sm:mx-0">
-                <div className="inline-block min-w-full align-middle px-2 sm:px-0">
+              // NOTE: this used to be `-mx-2 sm:mx-0` (a "full-bleed" trick: bleed the
+              // scroll container 0.5rem past the content edge on mobile so a wide table
+              // can scroll flush to the screen). That only works if whatever wraps
+              // .jmc-notes has >= 0.5rem of horizontal padding to absorb the bleed. On a
+              // narrow viewport, a browser can't scroll to a negative scrollLeft, so the
+              // left-side bleed is silently clipped and invisible — but the right-side
+              // bleed *is* reachable by scrolling, which is exactly what was showing up
+              // as blank space past the right edge on any note containing a table.
+              // Dropping the negative margin keeps the table scrolling within the
+              // normal content width instead of bleeding past it.
+              <div data-line={node?.position?.start?.line} className="overflow-x-auto my-6">
+                <div className="inline-block min-w-full align-middle">
                   <table className="min-w-full">{children}</table>
                 </div>
               </div>
