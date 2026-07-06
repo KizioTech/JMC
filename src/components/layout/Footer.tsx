@@ -8,7 +8,10 @@ const Footer = () => {
     <footer className="bg-surface-container-highest dark:bg-tertiary-container w-full mt-stack-lg">
       <div className="py-stack-lg px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto">
       <div className="col-span-1 md:col-span-1">
-        <div className="font-headline-h3 text-headline-h3 font-bold text-primary mb-4">JMC Academics</div>
+        <div className="flex items-center gap-2 mb-4">
+          <img src="/assets/images/logo.png" alt="JMC Logo" className="h-8 w-auto" />
+          <div className="font-headline-h3 text-headline-h3 font-bold text-primary">JMC Academics</div>
+        </div>
         <p className="font-body-sm text-body-sm text-on-surface-variant">
           Empowering mathematical mastery through precision education and expert mentorship since 2024.
         </p>

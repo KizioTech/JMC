@@ -70,8 +70,8 @@ const Auth = () => {
         >
           {/* Logo / Brand */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary shadow-lg mb-4">
-              <BookOpen className="w-8 h-8 text-white" />
+            <div className="flex justify-center mb-4">
+              <img src="/assets/images/logo.png" alt="JMC Logo" className="h-16 w-auto drop-shadow-md" />
             </div>
             <h1 className="text-2xl font-bold">JMC Academics</h1>
             <p className="text-muted-foreground text-sm mt-1">

@@ -12,7 +12,7 @@ const Index = () => {
         <PulseFitHero
           logo={
             <div className="flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-primary" />
+              <img src="/assets/images/logo.png" alt="JMC Logo" className="h-8 w-auto" />
               <span className="text-primary font-bold">JMC Academics</span>
             </div>
           }

@@ -121,8 +121,11 @@ const Navbar = () => {
     )}>
       <div className="max-w-container-max mx-auto flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 w-full">
         {/* Logo */}
-        <Link to="/" className="font-headline-h3 text-headline-h3 font-bold text-primary shrink-0">
-          JMC | Math & Academics
+        <Link to="/" className="flex items-center gap-2 shrink-0">
+          <img src="/assets/images/logo.png" alt="JMC Logo" className="h-8 w-auto" />
+          <span className="font-headline-h3 text-headline-h3 font-bold text-primary hidden sm:block">
+            JMC | Math & Academics
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
