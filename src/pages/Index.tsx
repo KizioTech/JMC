@@ -1,8 +1,39 @@
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import Particles from "@/components/ui/Particles";
-import { GraduationCap, Activity, Calendar, Users, BookOpen } from "lucide-react";
+import { GraduationCap, Activity, Calendar, Users, BookOpen, MapPin, Code2, ChevronRight } from "lucide-react";
 import { PulseFitHero } from "@/components/ui/pulse-fit-hero";
+
+// ── Rotating photo hook (shared logic) ──────────────────────────────────────
+const ABOUT_PHOTOS = [
+  "/assets/images/about/jmc1.jpg",
+  "/assets/images/about/jmc2.jpg",
+  "/assets/images/about/jmc3.jpg",
+  "/assets/images/about/jmc4.jpg",
+];
+
+function useRotatingPhoto(intervalMs = 8000) {
+  const [index, setIndex] = useState(() =>
+    Math.floor(Math.random() * ABOUT_PHOTOS.length)
+  );
+  const [fading, setFading] = useState(false);
+
+  const advance = useCallback(() => {
+    setFading(true);
+    setTimeout(() => {
+      setIndex((i) => (i + 1) % ABOUT_PHOTOS.length);
+      setFading(false);
+    }, 400);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(advance, intervalMs);
+    return () => clearInterval(timer);
+  }, [advance, intervalMs]);
+
+  return { src: ABOUT_PHOTOS[index], fading };
+}
 
 const Index = () => {
   return (
@@ -60,7 +91,7 @@ const Index = () => {
               onClick: () => window.location.href = '/courses',
             },
             {
-              image: "https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?w=400&h=500&fit=crop",
+              image: "https://unsplash.com/photos/a-calculator-and-a-pencil-on-top-of-a-piece-of-paper-x8fjj4fVSGg",
               category: "ADVANCED",
               title: "Linear Algebra",
               onClick: () => window.location.href = '/courses',
@@ -159,6 +190,9 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {/* Meet the Instructor */}
+        <MeetInstructorSection />
 
         {/* Learning Path Timeline */}
         <section className="py-stack-lg px-margin-mobile md:px-margin-desktop bg-surface-container-lowest overflow-hidden">
@@ -292,5 +326,88 @@ const Index = () => {
     </Layout>
   );
 };
+
+// ── Meet the Instructor Section ─────────────────────────────────────────────
+function MeetInstructorSection() {
+  const { src: photoSrc, fading } = useRotatingPhoto(8000);
+
+  return (
+    <section className="bg-surface overflow-hidden">
+      <div className="max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[580px]">
+        {/* Left: text with padding */}
+        <div className="flex flex-col justify-center py-16 px-margin-mobile md:px-14">
+          <span className="font-label-caps text-label-caps text-primary uppercase tracking-wider mb-3 block">
+            Meet the Instructor
+          </span>
+          <h2 className="font-headline-h1 text-headline-h1 text-on-surface mb-4">
+            Josophat Makawa Chifundo
+          </h2>
+          <div className="flex flex-wrap gap-2 mb-5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary">
+              <GraduationCap className="w-3.5 h-3.5" />
+              BSc Mathematics · UNIMA
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-surface-container text-on-surface-variant border border-outline-variant">
+              <MapPin className="w-3.5 h-3.5" />
+              Zomba, Malawi 
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-secondary/10 text-secondary">
+              <Code2 className="w-3.5 h-3.5" />
+              KizioTech
+            </span>
+          </div>
+          <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-4">
+            Mathematician, developer, and artist building at the intersection of math, code &amp; creativity. Teaching calculus and research methods to students across Malawi while shipping open-source tools for Africa's researchers.
+          </p>
+          <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-8">
+            From digital hymnbooks to offline-first survey platforms, I build things that matter — grounded in rigorous mathematics and human-centred design.
+          </p>
+          <div className="flex flex-wrap gap-2 mb-8">
+            {["JavaScript", "TypeScript", "React", "LaTeX", "Python", "R"].map((skill) => (
+              <span
+                key={skill}
+                className="text-xs px-2.5 py-1 rounded-md bg-surface-container-high text-on-surface border border-outline-variant font-medium"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+          <Link
+            to="/about"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary font-headline-h3 text-headline-h3 rounded-lg hover:brightness-110 active:scale-95 transition-all self-start"
+          >
+            Meet JMC
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Right: full-bleed image panel — spans the entire column height */}
+        <div className="relative min-h-[420px] lg:min-h-0">
+          <img
+            src={photoSrc}
+            alt="Josophat Makawa Chifundo — JMC"
+            className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500"
+            style={{ opacity: fading ? 0 : 1 }}
+          />
+          {/* Subtle gradient overlay at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/40 to-transparent" />
+          {/* Dots indicator */}
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+            {ABOUT_PHOTOS.map((p) => (
+              <span
+                key={p}
+                className={`block rounded-full transition-all duration-300 ${
+                  photoSrc === p
+                    ? "bg-white w-4 h-1.5"
+                    : "bg-white/50 w-1.5 h-1.5"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default Index;

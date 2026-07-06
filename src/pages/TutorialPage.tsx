@@ -1,18 +1,23 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Suspense, lazy, useMemo } from 'react';
-import { getTutorialBySlug, getTutorialsForSubject } from '@/services/contentService';
+import { Suspense, lazy, useEffect, useMemo, useState, useCallback } from 'react';
+import { getTutorialBySlug, getTutorialsForSubject, type TutorialRow } from '@/services/contentService';
 import Layout from '@/components/layout/Layout';
 import { ContentSkeleton } from '@/components/ui/Skeletons';
-import { ArrowLeft, ArrowRight, BookOpen, Clock, Crown, ExternalLink } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import MobileToolFab, { type FabMode } from '@/components/MobileToolFab';
+import {
+  ClipboardList,
+  Timer,
+  BarChart3,
+  Target,
+  BookOpen,
+  ArrowRight,
+  ArrowLeft,
+  Wrench
+} from 'lucide-react';
 
 const TutorialRenderer = lazy(() => import('@/components/TutorialRenderer'));
 
-// Configuration
-const UPGRADE_PATH = '/JMCPlus';
-
-// Utility Functions
 function stripLeadingDuplicateTitle(content: string, title: string) {
   if (!content) return content;
   const firstLine = content.trimStart().split('\n')[0]?.trim();
@@ -22,123 +27,9 @@ function stripLeadingDuplicateTitle(content: string, title: string) {
   return content;
 }
 
-const getDifficultyStyle = (difficulty?: string | null) => {
-  switch (difficulty) {
-    case "Beginner": return "bg-beginner-green text-white";
-    case "Intermediate": return "bg-intermediate-yellow text-white";
-    case "Advanced": return "bg-advanced-red text-white";
-    default: return "bg-primary-fixed text-on-primary-fixed";
-  }
-};
-
-// Sub-components
-interface MetadataBadgeProps {
-  difficulty?: string | null;
-  duration?: string;
-}
-
-const MetadataBadge = ({ difficulty, duration }: MetadataBadgeProps) => (
-  <div className="flex items-center gap-stack-sm flex-wrap">
-    {difficulty && (
-      <span 
-        className={cn("px-3 py-1 rounded-full font-label-caps text-[10px] tracking-widest uppercase", getDifficultyStyle(difficulty))}
-        aria-label={`Difficulty: ${difficulty}`}
-      >
-        {difficulty}
-      </span>
-    )}
-    {duration && (
-      <div className="flex items-center gap-1 text-on-surface-variant font-body-sm text-body-sm">
-        <Clock className="w-4 h-4" aria-hidden="true" />
-        <span>{duration}</span>
-      </div>
-    )}
-  </div>
-);
-
-interface SidebarProps {
-  subject?: string;
-  slug?: string;
-  subjectName?: string;
-  tutorials: any[];
-}
-
-const TutorialSidebar = ({ subject, slug, subjectName, tutorials }: SidebarProps) => (
-  <aside className="hidden md:flex flex-col gap-stack-sm p-gutter h-[calc(100vh-64px)] sticky top-16 w-64 bg-surface-container-low border-r border-outline-variant overflow-y-auto">
-    <div className="mb-stack-md">
-      <h2 className="font-headline-h3 text-headline-h3 text-primary">{subjectName}</h2>
-      <p className="font-body-sm text-body-sm text-on-surface-variant">Tutorials</p>
-    </div>
-    <nav className="flex flex-col gap-1 flex-1">
-      {tutorials.map((t) => (
-        <Link
-          key={t.slug}
-          to={`/tutorials/${subject}/${t.slug}`}
-          aria-current={t.slug === slug ? "page" : undefined}
-          className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-lg transition-all group font-label-caps text-label-caps",
-            t.slug === slug
-              ? "bg-primary-fixed text-on-primary-fixed font-bold"
-              : "text-on-surface-variant hover:bg-surface-container-high"
-          )}
-        >
-          <BookOpen className="w-5 h-5 shrink-0" aria-hidden="true" />
-          <span className="line-clamp-1">{t.title}</span>
-        </Link>
-      ))}
-    </nav>
-    <div className="pt-stack-md mt-auto border-t border-outline-variant">
-      <Link to={UPGRADE_PATH}>
-        <button 
-          className="w-full bg-secondary text-on-secondary px-4 py-3 rounded-xl font-label-caps text-label-caps hover:opacity-80 transition-all flex items-center justify-center gap-2"
-          aria-label="Upgrade to JMC Plus for premium features"
-        >
-          <Crown className="w-4 h-4" aria-hidden="true" />
-          Upgrade to Plus
-        </button>
-      </Link>
-    </div>
-  </aside>
-);
-
-interface NavigationTutorialProps {
-  tutorial: any;
-  subject?: string;
-  direction: 'prev' | 'next';
-}
-
-const NavigationTutorial = ({ tutorial, subject, direction }: NavigationTutorialProps) => {
-  const isPrev = direction === 'prev';
-  const label = isPrev ? 'Previous' : 'Next';
-  const ariaLabel = `${label} tutorial: ${tutorial.title}`;
-
-  return (
-    <Link 
-      to={`/tutorials/${subject}/${tutorial.slug}`} 
-      className={cn("w-full sm:w-auto", !isPrev && "ml-auto")}
-      aria-label={ariaLabel}
-    >
-      <div className={cn(
-        "flex items-center gap-2 p-4 rounded-xl hover:bg-surface-container-low transition-all border border-transparent hover:border-outline-variant group",
-        !isPrev && "flex-row-reverse text-right"
-      )}>
-        {isPrev ? (
-          <ArrowLeft className="w-5 h-5 text-on-surface-variant group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
-        ) : (
-          <ArrowRight className="w-5 h-5 text-on-surface-variant group-hover:translate-x-1 transition-transform" aria-hidden="true" />
-        )}
-        <div>
-          <div className="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">{label}</div>
-          <div className="font-headline-h3 text-headline-h3 text-primary line-clamp-1">{tutorial.title}</div>
-        </div>
-      </div>
-    </Link>
-  );
-};
-
-// Main Component
 const TutorialPage = () => {
   const { subject, slug } = useParams<{ subject: string; slug: string }>();
+  const [progress, setProgress] = useState({ solved: 0, total: 0 });
 
   const { data: tutorial, isLoading, error } = useQuery({
     queryKey: ['tutorial', subject, slug],
@@ -152,7 +43,19 @@ const TutorialPage = () => {
     enabled: !!subject,
   });
 
-  // Memoize navigation calculations
+  const cleanContent = useMemo(
+    () => (tutorial ? stripLeadingDuplicateTitle(tutorial.content_md, tutorial.title) : ''),
+    [tutorial]
+  );
+
+  useEffect(() => {
+    setProgress({ solved: 0, total: 0 });
+  }, [slug]);
+
+  const handleProgress = useCallback((solved: number, total: number) => {
+    setProgress({ solved, total });
+  }, []);
+
   const navigationTutorials = useMemo(() => {
     const currentIndex = subjectTutorials.findIndex(t => t.slug === slug);
     return {
@@ -165,7 +68,7 @@ const TutorialPage = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="pt-20 pb-12">
+        <div className="pt-20 pb-12 max-w-[1400px] mx-auto px-6">
           <ContentSkeleton />
         </div>
       </Layout>
@@ -177,11 +80,11 @@ const TutorialPage = () => {
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center space-y-4">
-            <h1 className="font-headline-h1 text-headline-h1 text-error">Tutorial not found</h1>
-            <p className="font-body-md text-body-md text-on-surface-variant">
+            <h1 className="text-3xl font-bold text-destructive">Tutorial not found</h1>
+            <p className="text-muted-foreground">
               The tutorial <strong>{subject}/{slug}</strong> does not exist or has not been published.
             </p>
-            <Link to="/tutorials" className="text-secondary hover:underline font-body-md">
+            <Link to="/tutorials" className="text-primary hover:underline">
               ← Back to Tutorials
             </Link>
           </div>
@@ -190,122 +93,202 @@ const TutorialPage = () => {
     );
   }
 
+  const pct = progress.total > 0 ? Math.round((progress.solved / progress.total) * 100) : 0;
+  const questionsArray = Array.from({ length: progress.total }, (_, i) => i + 1);
+
+  const renderProgressCard = () => (
+    <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border">
+      <h3 className="text-sm font-semibold">Overall Progress</h3>
+      <div className="mt-5 flex items-center justify-center">
+        <div className="relative h-28 w-28">
+          <svg viewBox="0 0 80 80" className="h-full w-full -rotate-90">
+            <circle
+              cx="40"
+              cy="40"
+              r="34"
+              fill="none"
+              stroke="var(--secondary)"
+              strokeWidth="8"
+            />
+            <circle
+              cx="40"
+              cy="40"
+              r="34"
+              fill="none"
+              stroke="var(--success)"
+              strokeWidth="8"
+              strokeDasharray="213.6"
+              strokeDashoffset={213.6 - (pct / 100) * 213.6}
+              strokeLinecap="round"
+              className="transition-all duration-700 ease-out"
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-2xl font-bold leading-none">{pct}%</div>
+          </div>
+        </div>
+      </div>
+      <div className="mt-4 text-center text-sm text-muted-foreground">
+        {progress.solved} of {progress.total} questions completed
+      </div>
+    </div>
+  );
+
+  const renderQuestionIndexCard = () => (
+    <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border">
+      <h3 className="text-sm font-semibold">Question Index</h3>
+      <div className="mt-3 grid grid-cols-5 gap-2">
+        {questionsArray.map((q) => (
+          <a
+            key={q}
+            href={`#problem-${q}`}
+            className="flex h-9 items-center justify-center rounded-md border border-border text-xs font-semibold hover:bg-secondary/60 transition-colors"
+          >
+            {q}
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderLessonCard = () =>
+    tutorial.notes && (
+      <div className="rounded-2xl bg-primary-soft p-5 ring-1 ring-primary/20">
+        <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+          <BookOpen className="h-4 w-4" />
+          Review Lesson
+        </div>
+        <p className="mt-2 text-sm text-foreground/80">
+          Stuck? Review the core concepts in the main notes before trying again.
+        </p>
+        <Link
+          to={`/notes/${tutorial.subjects?.slug}/${tutorial.notes.slug}`}
+          className="mt-3 inline-flex items-center justify-center w-full rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+        >
+          Go to Notes
+        </Link>
+      </div>
+    );
+
+  const fabModes: [FabMode, FabMode] = [
+    {
+      key: 'progress',
+      label: 'Progress',
+      icon: <Target className="h-4 w-4" />,
+      content: (
+        <div className="space-y-4">
+          {renderProgressCard()}
+          {renderQuestionIndexCard()}
+        </div>
+      ),
+    },
+    {
+      key: 'tools',
+      label: 'Tools',
+      icon: <Wrench className="h-4 w-4" />,
+      content: (
+        <div className="space-y-4">
+          {renderLessonCard()}
+          {!tutorial.notes && (
+            <p className="text-sm text-muted-foreground">No linked lesson for this tutorial.</p>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
     <Layout>
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 bg-primary text-on-primary px-4 py-2 rounded">
-        Skip to main content
-      </a>
-      <div className="flex max-w-container-max mx-auto">
-        {/* Sidebar */}
-        <TutorialSidebar 
-          subject={subject}
-          slug={slug}
-          subjectName={tutorial.subjects?.name}
-          tutorials={subjectTutorials}
-        />
+      <div className="bg-background lg:h-[calc(100vh-5rem)] lg:overflow-hidden">
+        <main className="mx-auto grid max-w-[1400px] grid-cols-1 gap-6 px-margin-mobile md:px-margin-desktop py-8 lg:h-full lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+          {/* MAIN (independent scroll) */}
+          <section className="space-y-6 min-w-0 lg:h-full lg:overflow-y-auto custom-scrollbar lg:pb-16 lg:pr-1">
+            {/* Header */}
+            <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
+                    <ClipboardList className="h-4 w-4" />
+                    Practice Tutorial
+                  </div>
+                  <h1 className="mt-2 text-3xl font-bold leading-tight md:text-4xl">
+                    {tutorial.title}
+                  </h1>
+                  <p className="mt-2 max-w-2xl text-muted-foreground">
+                    {tutorial.description || "Apply what you learned. Attempt each question first, then reveal the worked solution to check your reasoning."}
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <Timer className="h-4 w-4 text-primary" /> {tutorial.duration_text || "~20 min"}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <BarChart3 className="h-4 w-4 text-primary" /> {tutorial.difficulty || "Mixed difficulty"}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Target className="h-4 w-4 text-primary" /> {progress.total} questions
+                    </span>
+                  </div>
+                </div>
 
-        {/* Main Content */}
-        <main 
-          id="main-content"
-          className="flex-1 px-4 md:px-margin-desktop py-stack-md min-h-screen relative overflow-hidden"
-        >
-          {/* Dot grid background */}
-          <div 
-            className="absolute inset-0 -z-10" 
-            style={{ 
-              backgroundImage: "radial-gradient(#3f465c 0.5px, transparent 0.5px)", 
-              backgroundSize: "24px 24px", 
-              opacity: 0.1 
-            }}
-            aria-hidden="true"
-          />
-
-          {/* Breadcrumbs */}
-          <nav 
-            className="flex items-center gap-2 mb-stack-sm text-on-surface-variant font-body-sm text-body-sm flex-wrap"
-            aria-label="Breadcrumb"
-          >
-            <Link className="hover:text-primary transition-colors" to="/tutorials">Tutorials</Link>
-            <span aria-hidden="true">›</span>
-            <Link 
-              className="hover:text-primary transition-colors capitalize" 
-              to={`/tutorials/${subject}`}
-            >
-              {tutorial.subjects?.name || subject}
-            </Link>
-            <span aria-hidden="true">›</span>
-            <span className="text-primary font-semibold line-clamp-1">{tutorial.title}</span>
-          </nav>
-
-          {/* Content Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-gutter mb-stack-lg">
-            <div>
-              <h1 className="font-headline-h1 text-headline-h1 text-primary mb-2">{tutorial.title}</h1>
-              <MetadataBadge 
-                difficulty={tutorial.difficulty}
-                duration={tutorial.duration_text}
-              />
-            </div>
-            <div className="flex gap-3">
-              {tutorial.notes && (
-                <Link to={`/notes/${tutorial.subjects?.slug}/${tutorial.notes.slug}`}>
-                  <button 
-                    className="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg font-label-caps text-label-caps text-on-surface hover:bg-surface-container-high transition-colors"
-                    aria-label="Read accompanying note"
+                {tutorial.notes && (
+                  <Link
+                    to={`/notes/${tutorial.subjects?.slug}/${tutorial.notes.slug}`}
+                    className="inline-flex items-center gap-2 rounded-lg bg-primary-soft px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/15 whitespace-nowrap"
                   >
-                    <BookOpen className="w-4 h-4" aria-hidden="true" />
-                    Read Note
-                  </button>
+                    <BookOpen className="h-4 w-4" />
+                    Back to Notes
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* Content Article (TutorialRenderer maps the questions) */}
+            <Suspense fallback={<ContentSkeleton />}>
+              <TutorialRenderer content={cleanContent} onProgress={handleProgress} />
+            </Suspense>
+
+            {/* Prev/Next Navigation */}
+            <nav className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6">
+              {navigationTutorials.prevTutorial ? (
+                <Link
+                  to={`/tutorials/${subject}/${navigationTutorials.prevTutorial.slug}`}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-secondary/60 border border-border bg-card w-full sm:w-auto"
+                >
+                  <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Previous Tutorial</div>
+                    <div className="text-sm font-semibold line-clamp-1">{navigationTutorials.prevTutorial.title}</div>
+                  </div>
+                </Link>
+              ) : (
+                <div className="w-full sm:w-auto" />
+              )}
+
+              {navigationTutorials.nextTutorial && (
+                <Link
+                  to={`/tutorials/${subject}/${navigationTutorials.nextTutorial.slug}`}
+                  className="flex items-center justify-end gap-3 rounded-lg px-3 py-2 text-right hover:bg-secondary/60 border border-border bg-card w-full sm:w-auto"
+                >
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Next Tutorial</div>
+                    <div className="text-sm font-semibold line-clamp-1">{navigationTutorials.nextTutorial.title}</div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
                 </Link>
               )}
-              <Link to={`/quiz/${tutorial.slug}`}>
-                <button 
-                  className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-label-caps text-label-caps hover:opacity-90 transition-colors"
-                  aria-label="Take quiz to test your knowledge"
-                >
-                  Take Quiz
-                  <ExternalLink className="w-4 h-4" aria-hidden="true" />
-                </button>
-              </Link>
-            </div>
-          </div>
+            </nav>
+          </section>
 
-          {/* Article Body */}
-          <article className="max-w-3xl">
-            <Suspense fallback={<ContentSkeleton />}>
-              <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
-                <TutorialRenderer 
-                  content={stripLeadingDuplicateTitle(tutorial.content_md, tutorial.title)} 
-                />
-              </div>
-            </Suspense>
-          </article>
-
-          {/* Prev/Next Navigation */}
-          <nav 
-            className="flex flex-col sm:flex-row items-center justify-between gap-gutter border-t border-outline-variant pt-stack-lg mt-stack-lg max-w-3xl"
-            aria-label="Tutorial navigation"
-          >
-            {navigationTutorials.prevTutorial ? (
-              <NavigationTutorial 
-                tutorial={navigationTutorials.prevTutorial}
-                subject={subject}
-                direction="prev"
-              />
-            ) : (
-              <div className="w-full sm:w-auto" />
-            )}
-
-            {navigationTutorials.nextTutorial && (
-              <NavigationTutorial 
-                tutorial={navigationTutorials.nextTutorial}
-                subject={subject}
-                direction="next"
-              />
-            )}
-          </nav>
+          {/* RIGHT SIDEBAR (independent scroll, hidden on mobile in favor of the floating button) */}
+          <aside className="hidden lg:flex lg:h-full lg:flex-col lg:gap-4 lg:overflow-y-auto custom-scrollbar lg:pb-8 lg:pl-1">
+            {renderProgressCard()}
+            {renderQuestionIndexCard()}
+            {renderLessonCard()}
+          </aside>
         </main>
       </div>
+
+      <MobileToolFab modes={fabModes} />
     </Layout>
   );
 };

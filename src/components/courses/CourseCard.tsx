@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Clock, Layers, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import CatalogTag, { subjectCode } from "@/components/CatalogTag";
@@ -82,13 +83,13 @@ export default function CourseCard({ course, position, onEnroll }: CourseCardPro
             <Layers className="h-3 w-3" />
             Course
           </span>
-          <button
-            onClick={onEnroll}
+          <Link
+            to={`/courses/${course.slug}`}
             className="flex items-center gap-1 font-code text-[10px] font-bold uppercase tracking-wider text-[#4338FF] transition-all hover:gap-1.5"
           >
             Enroll
             <ArrowRight className="h-3 w-3" />
-          </button>
+          </Link>
         </div>
       </div>
     </motion.div>

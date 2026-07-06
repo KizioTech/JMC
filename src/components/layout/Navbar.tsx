@@ -29,6 +29,7 @@ const Navbar = () => {
     { name: "Library", path: "/library" },
     { name: "Tutorials", path: "/tutorials" },
     { name: "Courses", path: "/courses" },
+    { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
 
@@ -274,11 +275,14 @@ const Navbar = () => {
                   Admin
                 </Link>
               )}
-              <UserCircle 
-                className="text-primary w-8 h-8 cursor-pointer hover:bg-surface-container-low rounded-full transition-all p-1" 
+              <button
                 onClick={() => signOut()}
                 title="Sign Out"
-              />
+                className="rounded-full p-1 hover:bg-surface-container-low transition-all"
+              >
+                <UserCircle className="text-primary w-6 h-6" />
+              </button>
+
             </div>
           ) : (
             <Link to="/auth" className="font-label-caps text-label-caps text-on-surface px-4 py-2 hover:bg-surface-container-low transition-all duration-200 rounded-lg">

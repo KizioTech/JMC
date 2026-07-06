@@ -8,6 +8,7 @@ import Loading from "./components/ui/Loading";
 
 // Lazy load all page components
 const Index = lazy(() => import("./pages/Index"));
+const About = lazy(() => import("./pages/About"));
 const Library = lazy(() => import("./pages/Library"));
 const Tutorials = lazy(() => import("./pages/Tutorials"));
 const Courses = lazy(() => import("./pages/Courses"));
@@ -19,6 +20,7 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 // Dynamic DB-backed routes
 const NotePage = lazy(() => import("./pages/NotePage"));
 const TutorialPage = lazy(() => import("./pages/TutorialPage"));
+const CoursePage = lazy(() => import("./pages/CoursePage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const QuizPage = lazy(() => import("./components/QuizPage"));
@@ -72,6 +74,7 @@ const App = () => {
           <Suspense fallback={<Loading />}>
             <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
             <Route path="/library" element={<Library />} />
             <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/courses" element={<Courses />} />
@@ -103,6 +106,7 @@ const App = () => {
             {/* Dynamic DB-backed routes (new URL scheme) */}
             <Route path="/notes/:subject/:slug" element={<NotePage />} />
             <Route path="/tutorials/:subject/:slug" element={<TutorialPage />} />
+            <Route path="/courses/:slug" element={<CoursePage />} />
 
             {/* Quiz Routes */}
             <Route path="/quiz/:quizId" element={<QuizPage />} />

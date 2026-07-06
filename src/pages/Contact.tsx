@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { socialLinks } from "@/components/ui/social-icons";
 
 const fieldClass =
   "rounded-none border-2 border-[#0A0A0F]/15 bg-white font-code text-[13px] text-[#0A0A0F] placeholder:text-[#0A0A0F]/35 focus-visible:border-[#4338FF] focus-visible:ring-0 focus-visible:ring-offset-0";
@@ -167,6 +168,29 @@ const Contact = () => {
               <p className="font-code text-[11px] uppercase tracking-wider text-[#0A0A0F]/45">
                 Typical response time: 24–48 hours
               </p>
+            </div>
+
+            {/* Social connect */}
+            <div className="mt-8 border-t border-[#0A0A0F]/10 pt-8">
+              <p className="font-code text-[11px] font-bold uppercase tracking-[0.2em] text-[#0A0A0F]/45 text-center mb-4">
+                Or connect on social
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                {socialLinks.map(({ name, href, Icon, color }) => (
+                  <a
+                    key={name}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={name}
+                    title={name}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-[#0A0A0F]/10 bg-white text-[#0A0A0F]/55 text-[13px] font-medium transition-all duration-200 hover:border-[#4338FF]/40 hover:shadow-sm ${color}`}
+                  >
+                    <Icon size={15} />
+                    <span>{name}</span>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
