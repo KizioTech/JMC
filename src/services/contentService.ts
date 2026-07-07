@@ -183,3 +183,24 @@ export async function getTutorialBySlug(
   if (error) throw error;
   return data as unknown as TutorialWithContent;
 }
+
+// ——————————————————————————————————————————————————
+// Search
+// ——————————————————————————————————————————————————
+export interface SearchResult {
+  id: string;
+  type: 'note' | 'tutorial' | 'subject';
+  title: string;
+  slug: string;
+  subject_slug: string;
+}
+
+export async function searchContent(searchTerm: string): Promise<SearchResult[]> {
+  if (!searchTerm.trim()) return [];
+  const { data, error } = await supabase.rpc('search_content', { search_term: searchTerm });
+  if (error) {
+    console.error('Search error:', error);
+    return [];
+  }
+  return data as SearchResult[];
+}
